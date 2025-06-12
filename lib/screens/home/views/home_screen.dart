@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shop/components/Banner/S/banner_s_style_1.dart';
 import 'package:shop/components/Banner/S/banner_s_style_5.dart';
+
 import 'package:shop/constants.dart';
 import 'package:shop/route/screen_export.dart';
 
 import 'components/best_sellers.dart';
 import 'components/flash_sale.dart';
-import 'components/most_popular.dart';
+import 'components/popular_product.dart';
 import 'components/offer_carousel_and_categories.dart';
-import 'components/popular_products.dart';
+import 'components/new_products.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,7 @@ class HomeScreen extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(child: OffersCarouselAndCategories()),
-            const SliverToBoxAdapter(child: PopularProducts()),
+            const SliverToBoxAdapter(child: NewProducts()),
             const SliverPadding(
               padding: EdgeInsets.symmetric(vertical: defaultPadding * 1.5),
               sliver: SliverToBoxAdapter(child: FlashSale()),
@@ -31,9 +32,9 @@ class HomeScreen extends StatelessWidget {
                   // While loading use 👇
                   // const BannerMSkelton(),‚
                   BannerSStyle1(
-                    title: "New \narrival",
-                    subtitle: "SPECIAL OFFER",
-                    discountParcent: 50,
+                    title: "Nouveau \n Produits",
+                    subtitle: "OFFRE SPÉCIAL",
+                    discountParcent: 20,
                     press: () {
                       Navigator.pushNamed(context, onSaleScreenRoute);
                     },
@@ -44,12 +45,11 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SliverToBoxAdapter(child: BestSellers()),
-            const SliverToBoxAdapter(child: MostPopular()),
+            const SliverToBoxAdapter(child: PopularProducts()),
             SliverToBoxAdapter(
               child: Column(
                 children: [
                   const SizedBox(height: defaultPadding * 1.5),
-
                   const SizedBox(height: defaultPadding / 4),
                   // While loading use 👇
                   // const BannerSSkelton(),
@@ -65,7 +65,6 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SliverToBoxAdapter(child: BestSellers()),
           ],
         ),
       ),

@@ -8,13 +8,13 @@ import 'banner_s.dart';
 class BannerSStyle1 extends StatelessWidget {
   const BannerSStyle1({
     super.key,
-    this.image = "https://i.imgur.com/K41Mj7C.png",
+    this.image = "assets/images/rog-banner2.png",
     required this.title,
     required this.press,
     this.subtitle,
     required this.discountParcent,
   });
-  final String? image;
+  final String image;
   final String title;
   final String? subtitle;
   final int discountParcent;

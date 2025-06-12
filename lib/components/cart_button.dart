@@ -6,8 +6,8 @@ class CartButton extends StatelessWidget {
   const CartButton({
     super.key,
     required this.price,
-    this.title = "Buy Now",
-    this.subTitle = "Unit price",
+    this.title = "Acheter",
+    this.subTitle = "Prix",
     required this.press,
   });
 
@@ -45,7 +45,7 @@ class CartButton extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "\$${price.toStringAsFixed(2)}",
+                            "${price.toStringAsFixed(2)} €",
                             style: Theme.of(context)
                                 .textTheme
                                 .titleSmall!

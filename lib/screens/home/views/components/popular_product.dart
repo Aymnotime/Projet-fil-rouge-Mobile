@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:shop/components/product/product_card.dart';
 import 'package:shop/models/product_model.dart';
-import 'package:shop/services/auth_service.dart';
 import 'package:shop/route/screen_export.dart';
+import 'package:shop/services/auth_service.dart';
 
 import '../../../../constants.dart';
 
-class FlashSale extends StatelessWidget {
-  const FlashSale({super.key});
+class PopularProducts extends StatelessWidget {
+  const PopularProducts({super.key});
 
-  Future<List<ProductModel>> fetchFlashSaleProducts() async {
+  Future<List<ProductModel>> fetchPopularProducts() async {
     try {
       final items = await fetchStockItems();
-      // Filtrer les produits en flash sale (isFlashSale == true ou == 1)
-      final flashSaleItems = items.where((item) {
-        final val = item['isFlashSale'];
-        return val == true || val == 1;
-      }).take(6).toList();
-
-      debugPrint('Flash sale products trouvés: ${flashSaleItems.length}');
-
-      return flashSaleItems
-          .map((item) => ProductModel.fromJson(item))
+      final popularItems = items.where((item) =>
+      item['isPopular'] == true || item['isPopular'] == 1
+      ).take(6).toList();
+      return popularItems
+          .map((item) => ProductModel(
+        id: item['id']?.toString() ?? '',
+        image: item['image'] ?? '',
+        title: item['nom'] ?? '',
+        description: item['description'] ?? '',
+        brandName: item['brandName'] ?? '',
+        price: (item['prix'] as num?)?.toDouble() ?? 0.0,
+        priceAfterDiscount: item['priceAfterDiscount'] != null
+            ? (item['priceAfterDiscount'] as num).toDouble()
+            : null,
+        discountPercent: item['discountPercent'] != null
+            ? item['discountPercent'] as int
+            : null,
+      ))
           .toList();
     } catch (e) {
-      debugPrint('Erreur fetchFlashSaleProducts: $e');
+      // Affiche l'erreur dans la console
+      debugPrint('Erreur fetchPopularProducts: $e');
       return [];
     }
   }
@@ -38,14 +47,14 @@ class FlashSale extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(defaultPadding),
           child: Text(
-            "Offres spéciales",
+            "Produits populaire",
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
         SizedBox(
           height: 220,
           child: FutureBuilder<List<ProductModel>>(
-            future: fetchFlashSaleProducts(),
+            future: fetchPopularProducts(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -54,9 +63,8 @@ class FlashSale extends StatelessWidget {
                 return const Center(child: Text("Erreur lors du chargement"));
               }
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("Aucun produit en flash sale"));
+                return const Center(child: Text("Aucun produit populaire"));
               }
-
               final products = snapshot.data!;
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -68,8 +76,8 @@ class FlashSale extends StatelessWidget {
                   ),
                   child: ProductCard(
                     image: products[index].image,
-                    brandName: products[index].brandName,
                     title: products[index].title,
+                    brandName: products[index].brandName,
                     price: products[index].price,
                     priceAfterDiscount: products[index].priceAfterDiscount,
                     discountPercent: products[index].discountPercent,
@@ -85,7 +93,7 @@ class FlashSale extends StatelessWidget {
               );
             },
           ),
-        ),
+        )
       ],
     );
   }

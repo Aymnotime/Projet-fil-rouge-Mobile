@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/route/screen_export.dart';
 
+
 class AddedToCartMessageScreen extends StatelessWidget {
   const AddedToCartMessageScreen({super.key});
 
@@ -22,7 +23,7 @@ class AddedToCartMessageScreen extends StatelessWidget {
               ),
               const Spacer(flex: 2),
               Text(
-                "Added to cart",
+                "Ajouté au panier",
                 style: Theme.of(context)
                     .textTheme
                     .headlineSmall!
@@ -30,7 +31,7 @@ class AddedToCartMessageScreen extends StatelessWidget {
               ),
               const SizedBox(height: defaultPadding / 2),
               const Text(
-                "Click the checkout button to complete the purchase process.",
+                "Cliquez sur le bouton de paiement pour finaliser votre achat.",
                 textAlign: TextAlign.center,
               ),
               const Spacer(flex: 2),
@@ -38,12 +39,12 @@ class AddedToCartMessageScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, entryPointScreenRoute);
                 },
-                child: const Text("Continue shopping"),
+                child: const Text("Continuer vos achats"),
               ),
               const SizedBox(height: defaultPadding),
               ElevatedButton(
                 onPressed: () {},
-                child: const Text("Checkout"),
+                child: const Text("Passer à la caisse"),
               ),
               const Spacer(),
             ],

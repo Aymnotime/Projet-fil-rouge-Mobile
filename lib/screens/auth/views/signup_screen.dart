@@ -2,8 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shop/screens/auth/views/components/sign_up_form.dart';
 import 'package:shop/route/route_constants.dart';
-
+import 'package:shop/services/auth_service.dart';
 import '../../../constants.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,6 +16,14 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isChecked = false;
+  bool _isLoading = false;
+
+  // Ajout des contrôleurs pour les champs du formulaire
+  final nomController = TextEditingController();
+  final prenomController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +51,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     "Veuillez saisir des données valides afin de créer un compte.",
                   ),
                   const SizedBox(height: defaultPadding),
-                  SignUpForm(formKey: _formKey),
+                  // Passe les contrôleurs au SignUpForm
+                  SignUpForm(
+                    formKey: _formKey,
+                    nomController: nomController,
+                    prenomController: prenomController,
+                    emailController: emailController,
+                    passwordController: passwordController,
+                    confirmController: confirmController,
+                  ),
                   const SizedBox(height: defaultPadding),
                   Row(
                     children: [
@@ -81,15 +98,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ],
                   ),
                   const SizedBox(height: defaultPadding * 2),
-                  ElevatedButton(
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
                     onPressed: _isChecked
-                        ? () {
+                        ? () async {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamed(context, entryPointScreenRoute);
+                        setState(() => _isLoading = true);
+                        final error = await registerUser(
+                          nomController.text,
+                          prenomController.text,
+                          emailController.text,
+                          passwordController.text,
+                          confirmController.text,
+                        );
+                        setState(() => _isLoading = false);
+                        if (error == null) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            entryPointScreenRoute,
+                                (route) => false,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(error)),
+                          );
+                        }
                       }
                     }
                         : null,
-                    child: const Text("Continuer"),
+                    child: const Text("S'inscrire"),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -39,7 +39,7 @@ class WalletScreen extends StatelessWidget {
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => Padding(
+                      (context, index) => Padding(
                     padding: const EdgeInsets.only(top: defaultPadding),
                     child: WalletHistoryCard(
                       isReturn: index == 1,
@@ -47,17 +47,21 @@ class WalletScreen extends StatelessWidget {
                       amount: 129,
                       products: [
                         ProductModel(
+                          id: '1',
                           image: productDemoImg1,
                           title: "Mountain Warehouse for Women",
                           brandName: "Lipsy london",
+                          description: "",
                           price: 540,
-                          priceAfetDiscount: 420,
-                          dicountpercent: 20,
+                          priceAfterDiscount: 420,
+                          discountPercent: 20,
                         ),
                         ProductModel(
+                          id: '2',
                           image: productDemoImg4,
                           title: "Mountain Beta Warehouse",
                           brandName: "Lipsy london",
+                          description: "",
                           price: 800,
                         ),
                       ],

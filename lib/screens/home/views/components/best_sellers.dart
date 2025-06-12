@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop/components/product/product_card.dart';
 import 'package:shop/models/product_model.dart';
+import 'package:shop/services/auth_service.dart';
 
 import '../../../../constants.dart';
 import '../../../../route/route_constants.dart';
@@ -9,6 +10,31 @@ class BestSellers extends StatelessWidget {
   const BestSellers({
     super.key,
   });
+
+  Future<List<ProductModel>> fetchBestSellers() async {
+    final items = await fetchStockItems();
+    // Filtrer les produits best sellers (isBestSeller == true ou == 1)
+    final bestSellerItems = items.where((item) =>
+    item['isBestSeller'] == true || item['isBestSeller'] == 1
+    ).take(6).toList();
+    debugPrint('Best sellers trouvés: ${bestSellerItems.length}');
+    return bestSellerItems
+        .map((item) => ProductModel(
+      id: item['id']?.toString() ?? '',
+      image: item['image'] ?? '',
+      title: item['nom'] ?? '',
+      description: item['description'] ?? '',
+      brandName: item['brandName'] ?? '',
+      price: (item['prix'] as num?)?.toDouble() ?? 0.0,
+      priceAfterDiscount: item['priceAfterDiscount'] != null
+          ? (item['priceAfterDiscount'] as num).toDouble()
+          : null,
+      discountPercent: item['discountPercent'] != null
+          ? item['discountPercent'] as int
+          : null,
+    ))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,35 +49,39 @@ class BestSellers extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
-        // While loading use 👇
-        // const ProductsSkelton(),
         SizedBox(
           height: 220,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            // Find demoBestSellersProducts on models/ProductModel.dart
-            itemCount: demoBestSellersProducts.length,
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.only(
-                left: defaultPadding,
-                right: index == demoBestSellersProducts.length - 1
-                    ? defaultPadding
-                    : 0,
-              ),
-              child: ProductCard(
-                image: demoBestSellersProducts[index].image,
-                brandName: demoBestSellersProducts[index].brandName,
-                title: demoBestSellersProducts[index].title,
-                price: demoBestSellersProducts[index].price,
-                priceAfetDiscount:
-                    demoBestSellersProducts[index].priceAfetDiscount,
-                dicountpercent: demoBestSellersProducts[index].dicountpercent,
-                press: () {
-                  Navigator.pushNamed(context, productDetailsScreenRoute,
-                      arguments: index.isEven);
-                },
-              ),
-            ),
+          child: FutureBuilder<List<ProductModel>>(
+            future: fetchBestSellers(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final products = snapshot.data!;
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: products.length,
+                itemBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(
+                    left: defaultPadding,
+                    right: index == products.length - 1 ? defaultPadding : 0,
+                  ),
+                  child: ProductCard(
+                    image: products[index].image,
+
+                    title: products[index].title,
+                    brandName: products[index].brandName,
+                    price: products[index].price,
+                    priceAfterDiscount: products[index].priceAfterDiscount,
+                    discountPercent: products[index].discountPercent,
+                    press: () {
+                      Navigator.pushNamed(context, productDetailsScreenRoute,
+                          arguments: products[index]);
+                    },
+                  ),
+                ),
+              );
+            },
           ),
         )
       ],

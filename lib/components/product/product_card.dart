@@ -10,20 +10,22 @@ class ProductCard extends StatelessWidget {
     required this.brandName,
     required this.title,
     required this.price,
-    this.priceAfetDiscount,
-    this.dicountpercent,
+    this.priceAfterDiscount,
+    this.discountPercent,
     required this.press,
   });
   final String image, brandName, title;
   final double price;
-  final double? priceAfetDiscount;
-  final int? dicountpercent;
+  final double? priceAfterDiscount;
+  final int? discountPercent;
   final VoidCallback press;
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: press,
+      onPressed: () {
+        press();
+      },
       style: OutlinedButton.styleFrom(
           minimumSize: const Size(140, 220),
           maximumSize: const Size(140, 220),
@@ -35,7 +37,7 @@ class ProductCard extends StatelessWidget {
             child: Stack(
               children: [
                 NetworkImageWithLoader(image, radius: defaultBorderRadious),
-                if (dicountpercent != null)
+                if (discountPercent != null)
                   Positioned(
                     right: defaultPadding / 2,
                     top: defaultPadding / 2,
@@ -49,7 +51,7 @@ class ProductCard extends StatelessWidget {
                             Radius.circular(defaultBorderRadious)),
                       ),
                       child: Text(
-                        "$dicountpercent% off",
+                        "$discountPercent% off",
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -85,39 +87,41 @@ class ProductCard extends StatelessWidget {
                         .copyWith(fontSize: 12),
                   ),
                   const Spacer(),
-                  priceAfetDiscount != null
+                  priceAfterDiscount != null
                       ? Row(
-                          children: [
-                            Text(
-                              "\$$priceAfetDiscount",
-                              style: const TextStyle(
-                                color: Color(0xFF31B0D8),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(width: defaultPadding / 4),
-                            Text(
-                              "\$$price",
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .color,
-                                fontSize: 10,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          "\$$price",
-                          style: const TextStyle(
-                            color: Color(0xFF31B0D8),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
+                    children: [
+                      Text(
+                        "${priceAfterDiscount ?? price}€",
+                        style: const TextStyle(
+                          color: Color(0xFF31B0D8),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      ),
+                      if (priceAfterDiscount != null)
+                        const SizedBox(width: defaultPadding / 4),
+                      if (priceAfterDiscount != null)
+                        Text(
+                          "$price€",
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .color,
+                            fontSize: 10,
+                            decoration: TextDecoration.lineThrough,
                           ),
                         ),
+                    ],
+                  )
+                      : Text(
+                    "$price€",
+                    style: const TextStyle(
+                      color: Color(0xFF31B0D8),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -67,15 +67,15 @@ const double defaultBorderRadious = 12.0;
 const Duration defaultDuration = Duration(milliseconds: 300);
 
 final passwordValidator = MultiValidator([
-  RequiredValidator(errorText: 'Password is required'),
-  MinLengthValidator(8, errorText: 'password must be at least 8 digits long'),
+  RequiredValidator(errorText: 'Mot de passe requis'),
+  MinLengthValidator(12, errorText: 'Le mot de passe doit contenir au moins 12 caractères'),
   PatternValidator(r'(?=.*?[#?!@$%^&*-])',
-      errorText: 'passwords must have at least one special character')
+      errorText: 'Le mot de passe doit contenir au moins un caractère spécial')
 ]);
 
 final emaildValidator = MultiValidator([
-  RequiredValidator(errorText: 'Email is required'),
-  EmailValidator(errorText: "Enter a valid email address"),
+  RequiredValidator(errorText: 'Email requis'),
+  EmailValidator(errorText: "Enter une adresse mail valide"),
 ]);
 
-const pasNotMatchErrorText = "passwords do not match";
+const pasNotMatchErrorText = "Les mots de passe ne correspondent pas";

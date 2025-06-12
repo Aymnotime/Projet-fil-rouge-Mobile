@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/route/route_constants.dart';
+import 'package:shop/services/auth_service.dart'; // <-- Ajoute cet import
 
 import 'components/login_form.dart';
 
@@ -13,6 +14,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +44,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Connectez-vous.",
                   ),
                   const SizedBox(height: defaultPadding),
-                  LogInForm(formKey: _formKey),
+                  LogInForm(
+                    formKey: _formKey,
+                    emailController: emailController,
+                    passwordController: passwordController,
+                  ),
                   Align(
                     child: TextButton(
                       child: const Text("Mot de passe oublié"),
@@ -55,13 +63,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? size.height * 0.1
                         : defaultPadding,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushNamedAndRemoveUntil(
+                        setState(() => _isLoading = true);
+                        final error = await loginUser(
+                          emailController.text,
+                          passwordController.text,
+                        );
+                        setState(() => _isLoading = false);
+                        if (error == null) {
+                          Navigator.pushNamedAndRemoveUntil(
                             context,
                             entryPointScreenRoute,
-                            ModalRoute.withName(logInScreenRoute));
+                            ModalRoute.withName(logInScreenRoute),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(error)),
+                          );
+                        }
                       }
                     },
                     child: const Text("Se connecter"),

@@ -16,7 +16,7 @@ class LocationPermissonStoreAvailabilityScreen extends StatelessWidget {
             const SizedBox(height: defaultPadding),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
+              const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -25,7 +25,7 @@ class LocationPermissonStoreAvailabilityScreen extends StatelessWidget {
                     child: BackButton(),
                   ),
                   Text(
-                    "Store Pickup Availability",
+                    "Disponibilité du retrait en magasin",
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(width: 40),
@@ -42,7 +42,7 @@ class LocationPermissonStoreAvailabilityScreen extends StatelessWidget {
                       child: TextFormField(
                         decoration: InputDecoration(
                           fillColor: Colors.transparent,
-                          hintText: "Find something...",
+                          hintText: "Rechercher...",
                           border: secodaryOutlineInputBorder(context),
                           enabledBorder: secodaryOutlineInputBorder(context),
                           focusedBorder: secodaryOutlineInputBorder(context),
@@ -73,7 +73,7 @@ class LocationPermissonStoreAvailabilityScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Your Location Services are turned off.",
+                      "Les services de localisation sont désactivés.",
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
@@ -81,12 +81,12 @@ class LocationPermissonStoreAvailabilityScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: defaultPadding),
                     const Text(
-                      "Turn on Location Services in your device Settings to search for stores by current location. You can still search by Country/Region, City or Zip Code.",
+                      "Activez les services de localisation dans les paramètres de votre appareil pour rechercher des magasins à proximité. Vous pouvez toujours rechercher par pays/région, ville ou code postal.",
                     ),
                     const SizedBox(height: defaultPadding * 1.5),
                     ElevatedButton(
                       onPressed: () {},
-                      child: const Text("Settings"),
+                      child: const Text("Paramètres"),
                     )
                   ],
                 ),

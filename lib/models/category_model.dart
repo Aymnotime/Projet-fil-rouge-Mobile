@@ -14,46 +14,38 @@ class CategoryModel {
 final List<CategoryModel> demoCategoriesWithImage = [
   CategoryModel(title: "Woman’s", image: "https://i.imgur.com/5M89G2P.png"),
   CategoryModel(title: "Man’s", image: "https://i.imgur.com/UM3GdWg.png"),
-  CategoryModel(title: "Kid’s", image: "https://i.imgur.com/Lp0D6k5.png"),
   CategoryModel(title: "Accessories", image: "https://i.imgur.com/3mSE5sN.png"),
 ];
 
 final List<CategoryModel> demoCategories = [
   CategoryModel(
-    title: "On sale",
+    title: "En vente",
     svgSrc: "assets/icons/Sale.svg",
     subCategories: [
-      CategoryModel(title: "All Clothing"),
-      CategoryModel(title: "New In"),
-      CategoryModel(title: "Coats & Jackets"),
-      CategoryModel(title: "Dresses"),
-      CategoryModel(title: "Jeans"),
+      CategoryModel(title: "Nos Produits"),
+      CategoryModel(title: "Nouveau"),
+      CategoryModel(title: "PC Gamer"),
+      CategoryModel(title: "Ecran"),
+      CategoryModel(title: "Casque"),
     ],
   ),
   CategoryModel(
-    title: "Man’s & Woman’s",
-    svgSrc: "assets/icons/Man&Woman.svg",
+    title: "Tendances",
+    svgSrc: "assets/icons/fire.svg",
     subCategories: [
-      CategoryModel(title: "All Clothing"),
-      CategoryModel(title: "New In"),
-      CategoryModel(title: "Coats & Jackets"),
+      CategoryModel(title: "Ecran"),
+      CategoryModel(title: "Pc Gamer"),
+      CategoryModel(title: "Carte Graphique"),
     ],
   ),
+
+
   CategoryModel(
-    title: "Kids",
-    svgSrc: "assets/icons/Child.svg",
-    subCategories: [
-      CategoryModel(title: "All Clothing"),
-      CategoryModel(title: "New In"),
-      CategoryModel(title: "Coats & Jackets"),
-    ],
-  ),
-  CategoryModel(
-    title: "Accessories",
+    title: "Accessoires",
     svgSrc: "assets/icons/Accessories.svg",
     subCategories: [
-      CategoryModel(title: "All Clothing"),
-      CategoryModel(title: "New In"),
+      CategoryModel(title: "Casque VR"),
+      CategoryModel(title: "Clavier"),
     ],
   ),
 ];
