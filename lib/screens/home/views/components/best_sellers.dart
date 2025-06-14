@@ -17,22 +17,9 @@ class BestSellers extends StatelessWidget {
     final bestSellerItems = items.where((item) =>
     item['isBestSeller'] == true || item['isBestSeller'] == 1
     ).take(6).toList();
-    debugPrint('Best sellers trouvés: ${bestSellerItems.length}');
+    debugPrint('Best sellers trouvés: \\${bestSellerItems.length}');
     return bestSellerItems
-        .map((item) => ProductModel(
-      id: item['id']?.toString() ?? '',
-      image: item['image'] ?? '',
-      title: item['nom'] ?? '',
-      description: item['description'] ?? '',
-      brandName: item['brandName'] ?? '',
-      price: (item['prix'] as num?)?.toDouble() ?? 0.0,
-      priceAfterDiscount: item['priceAfterDiscount'] != null
-          ? (item['priceAfterDiscount'] as num).toDouble()
-          : null,
-      discountPercent: item['discountPercent'] != null
-          ? item['discountPercent'] as int
-          : null,
-    ))
+        .map((item) => ProductModel.fromJson(item))
         .toList();
   }
 

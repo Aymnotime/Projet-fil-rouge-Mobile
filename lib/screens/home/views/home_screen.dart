@@ -54,8 +54,8 @@ class HomeScreen extends StatelessWidget {
                   // While loading use 👇
                   // const BannerSSkelton(),
                   BannerSStyle5(
-                    title: "Black \nfriday",
-                    subtitle: "50% Off",
+                    title: "PROMO\n",
+                    subtitle: "-50%",
                     bottomText: "Collection".toUpperCase(),
                     press: () {
                       Navigator.pushNamed(context, onSaleScreenRoute);

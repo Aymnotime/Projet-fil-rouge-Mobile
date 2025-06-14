@@ -16,20 +16,7 @@ class PopularProducts extends StatelessWidget {
       item['isPopular'] == true || item['isPopular'] == 1
       ).take(6).toList();
       return popularItems
-          .map((item) => ProductModel(
-        id: item['id']?.toString() ?? '',
-        image: item['image'] ?? '',
-        title: item['nom'] ?? '',
-        description: item['description'] ?? '',
-        brandName: item['brandName'] ?? '',
-        price: (item['prix'] as num?)?.toDouble() ?? 0.0,
-        priceAfterDiscount: item['priceAfterDiscount'] != null
-            ? (item['priceAfterDiscount'] as num).toDouble()
-            : null,
-        discountPercent: item['discountPercent'] != null
-            ? item['discountPercent'] as int
-            : null,
-      ))
+          .map((item) => ProductModel.fromJson(item))
           .toList();
     } catch (e) {
       // Affiche l'erreur dans la console

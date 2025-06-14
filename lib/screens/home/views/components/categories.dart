@@ -1,63 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop/route/screen_export.dart';
-
+import 'package:shop/models/category_model.dart';
+import 'package:shop/services/auth_service.dart';
 import '../../../../constants.dart';
 
-// For preview
-class CategoryModel {
-  final String name;
-  final String? svgSrc, route;
-
-  CategoryModel({
-    required this.name,
-    this.svgSrc,
-    this.route,
-  });
-}
-
-List<CategoryModel> demoCategories = [
-  CategoryModel(name: "All Categories"),
-  CategoryModel(
-      name: "Meilleures ventes",
-      svgSrc: "assets/icons/Sale.svg"),
-  CategoryModel(name: "PC", svgSrc: "assets/icons/video-games.png"),
-  CategoryModel(name: "Ecran", svgSrc: "assets/icons/screen.svg"),
-];
-// End For Preview
-
 class Categories extends StatelessWidget {
+  final String selectedCategory;
+  final ValueChanged<String> onCategorySelected;
+
   const Categories({
     super.key,
+    required this.selectedCategory,
+    required this.onCategorySelected,
   });
+
+  Future<List<CategoryModel>> fetchCategories() async {
+    final items = await fetchCategoriesFromApi();
+    return items.map<CategoryModel>((item) => CategoryModel(
+      title: item['nom'] ?? '',
+      svgSrc: null, // À adapter si tu ajoutes une icône en BDD
+    )).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          ...List.generate(
-            demoCategories.length,
-            (index) => Padding(
-              padding: EdgeInsets.only(
-                  left: index == 0 ? defaultPadding : defaultPadding / 2,
-                  right:
-                      index == demoCategories.length - 1 ? defaultPadding : 0),
-              child: CategoryBtn(
-                category: demoCategories[index].name,
-                svgSrc: demoCategories[index].svgSrc,
-                isActive: index == 0,
-                press: () {
-                  if (demoCategories[index].route != null) {
-                    Navigator.pushNamed(context, demoCategories[index].route!);
-                  }
-                },
+    return FutureBuilder<List<CategoryModel>>(
+      future: fetchCategories(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const Center(child: Text('Aucune catégorie trouvée'));
+        }
+        final categories = snapshot.data!;
+        final allCategories = [CategoryModel(title: 'Tous les produits', svgSrc: null), ...categories];
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              ...List.generate(
+                allCategories.length,
+                    (index) => Padding(
+                  padding: EdgeInsets.only(
+                      left: index == 0 ? defaultPadding : defaultPadding / 2,
+                      right: index == allCategories.length - 1 ? defaultPadding : 0),
+                  child: CategoryBtn(
+                    category: allCategories[index].title,
+                    svgSrc: allCategories[index].svgSrc,
+                    isActive: selectedCategory == allCategories[index].title,
+                    press: () {
+                      onCategorySelected(allCategories[index].title);
+                    },
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -120,3 +122,25 @@ class CategoryBtn extends StatelessWidget {
     );
   }
 }
+
+// For preview
+// class CategoryModel {
+//   final String title;
+//   final String? svgSrc;
+//   // final String? route; // supprimé car non utilisé dans le modèle dynamique
+//
+//   CategoryModel({
+//     required this.title,
+//     this.svgSrc,
+//   });
+// }
+
+// List<CategoryModel> demoCategories = [
+//   CategoryModel(title: "All Categories"),
+//   CategoryModel(
+//       title: "Meilleures ventes",
+//       svgSrc: "assets/icons/Sale.svg"),
+//   CategoryModel(title: "PC", svgSrc: "assets/icons/video-games.png"),
+//   CategoryModel(title: "Ecran", svgSrc: "assets/icons/screen.svg"),
+// ];
+/// End For Preview

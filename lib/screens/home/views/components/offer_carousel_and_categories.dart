@@ -4,10 +4,24 @@ import '../../../../constants.dart';
 import 'categories.dart';
 import 'offers_carousel.dart';
 
-class OffersCarouselAndCategories extends StatelessWidget {
+class OffersCarouselAndCategories extends StatefulWidget {
   const OffersCarouselAndCategories({
     super.key,
   });
+
+  @override
+  State<OffersCarouselAndCategories> createState() => _OffersCarouselAndCategoriesState();
+}
+
+class _OffersCarouselAndCategoriesState extends State<OffersCarouselAndCategories> {
+  String selectedCategory = 'Tous les produits';
+
+  void _onCategorySelected(String category) {
+    setState(() {
+      selectedCategory = category;
+      // Ici, tu peux aussi notifier le parent ou filtrer les produits si besoin
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +41,10 @@ class OffersCarouselAndCategories extends StatelessWidget {
         ),
         // While loading use 👇
         // const CategoriesSkelton(),
-        const Categories(),
+        Categories(
+          selectedCategory: selectedCategory,
+          onCategorySelected: _onCategorySelected,
+        ),
       ],
     );
   }

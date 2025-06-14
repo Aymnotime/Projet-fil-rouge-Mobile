@@ -4,9 +4,9 @@ import 'package:shop/route/router.dart' as router;
 import 'package:shop/theme/app_theme.dart';
 import 'package:shop/services/auth_service.dart'; // Import pour initializeNetwork()
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  initializeNetwork();
+  await initializeNetwork();
   runApp(const MyApp());
 }
 

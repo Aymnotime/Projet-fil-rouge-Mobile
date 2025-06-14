@@ -13,12 +13,14 @@ class ProductCard extends StatelessWidget {
     this.priceAfterDiscount,
     this.discountPercent,
     required this.press,
+    this.categorie, // Ajout catégorie
   });
   final String image, brandName, title;
   final double price;
   final double? priceAfterDiscount;
   final int? discountPercent;
   final VoidCallback press;
+  final String? categorie; // Ajout catégorie
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,18 @@ class ProductCard extends StatelessWidget {
                         .bodyMedium!
                         .copyWith(fontSize: 10),
                   ),
+                  if (categorie != null && categorie!.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      categorie!.split(',').map((e) => e.trim()).join(', '), // Affiche toutes les catégories séparées
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall!
+                          .copyWith(fontSize: 10, color: Colors.blueGrey),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                   const SizedBox(height: defaultPadding / 2),
                   Text(
                     title,

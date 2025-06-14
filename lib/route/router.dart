@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop/entry_point.dart';
 import 'package:shop/models/product_model.dart';
+import 'package:shop/screens/products/views/products_screen.dart';
 import 'screen_export.dart';
 
 // Yuo will get 50+ screens and more once you have the full template
@@ -186,9 +187,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   //   return MaterialPageRoute(
   //     builder: (context) => const SearchHistoryScreen(),
   //   );
-    case bookmarkScreenRoute:
+    case productsScreenRoute:
       return MaterialPageRoute(
-        builder: (context) => const BookmarkScreen(),
+        builder: (context) => const ProductsScreen(),
       );
     case entryPointScreenRoute:
       return MaterialPageRoute(

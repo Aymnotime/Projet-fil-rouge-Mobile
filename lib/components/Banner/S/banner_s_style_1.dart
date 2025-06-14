@@ -23,7 +23,7 @@ class BannerSStyle1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BannerS(
-      image: image!,
+      image: image,
       press: press,
       children: [
         Padding(

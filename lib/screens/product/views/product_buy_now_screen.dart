@@ -42,7 +42,7 @@ class _ProductBuyNowScreenState extends State<ProductBuyNowScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double unitPrice = widget.product.priceAfterDiscount ?? widget.product.price;
+    double unitPrice = (widget.product.priceAfterDiscount ?? widget.product.price).toDouble();
     double totalPrice = unitPrice * quantity;
 
     return Scaffold(
@@ -51,19 +51,27 @@ class _ProductBuyNowScreenState extends State<ProductBuyNowScreen> {
         title: "Ajouter au panier",
         subTitle: "Prix total",
         press: () async {
-          // Appel API pour ajouter au panier
-          await addToCart({
-            'id': widget.product.id, // Assure-toi que ProductModel a bien un champ id
-            'nom': widget.product.title,
-            'image': widget.product.image,
-            'prix': unitPrice,
+          debugPrint('ProductBuyNowScreen: Ajout au panier id=${widget.product.id}, quantity=$quantity');
+          final result = await addToCart({
+            'id': widget.product.id, // Pour compatibilité avec la fonction Flutter
             'quantity': quantity,
           });
-          customModalBottomSheet(
-            context,
-            isDismissible: false,
-            child: const AddedToCartMessageScreen(),
-          );
+          debugPrint('ProductBuyNowScreen: Résultat addToCart = $result');
+          if (result == null) {
+            // Succès
+            customModalBottomSheet(
+              context,
+              isDismissible: false,
+              child: const AddedToCartMessageScreen(),
+            );
+          } else {
+            // Erreur
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(result, style: const TextStyle(color: Colors.white)), backgroundColor: Colors.red),
+              );
+            }
+          }
         },
       ),
       body: Column(

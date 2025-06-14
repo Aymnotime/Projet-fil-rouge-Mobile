@@ -123,13 +123,14 @@ Future<List<Map<String, dynamic>>> fetchStockItems() async {
       options: Options(contentType: Headers.jsonContentType),
     );
 
-    debugPrint('Réponse brute API: ${response.data}');
+    debugPrint('Réponse brute API: \\n${response.data}');
 
     if (response.statusCode == 200) {
       final List items = response.data;
+      debugPrint('Catégories reçues : ' + items.map((e) => e['categorie']).toList().toString());
       return items.cast<Map<String, dynamic>>();
     } else {
-      debugPrint('Erreur API: ${response.statusCode}');
+      debugPrint('Erreur API: \\n${response.statusCode}');
     }
   } catch (e) {
     debugPrint('Erreur réseau fetchStockItems: $e');
@@ -142,7 +143,10 @@ Future<String?> addToCart(Map<String, dynamic> product) async {
   try {
     final response = await dio.post(
       'http://10.0.2.2:3000/api/panier',
-      data: product,
+      data: {
+        'id_produit': product['id'],
+        'quantite': product['quantity'] ?? 1,
+      },
       options: Options(contentType: Headers.jsonContentType),
     );
     final data = response.data;
@@ -182,6 +186,7 @@ Future<String?> removeFromCart(String productId) async {
     );
     final data = response.data;
     if (response.statusCode == 200 && data['success'] == true) {
+      debugPrint('Suppression du produit $productId réussie.');
       return null;
     } else {
       return data['message'] ?? "Erreur lors de la suppression du panier";
@@ -189,4 +194,40 @@ Future<String?> removeFromCart(String productId) async {
   } catch (e) {
     return 'Erreur suppression panier : $e';
   }
+}
+
+// Modifier la quantité d'un produit dans le panier (API)
+Future<String?> updateCartQuantity(String productId, int quantite) async {
+  try {
+    final response = await dio.put(
+      'http://10.0.2.2:3000/api/panier/$productId',
+      data: {'quantite': quantite},
+      options: Options(contentType: Headers.jsonContentType),
+    );
+    final data = response.data;
+    if (response.statusCode == 200 && data['success'] == true) {
+      return null;
+    } else {
+      return data['message'] ?? "Erreur lors de la modification de la quantité";
+    }
+  } catch (e) {
+    return 'Erreur modification quantité : $e';
+  }
+}
+
+// Fonction pour récupérer les catégories depuis l'API
+Future<List<Map<String, dynamic>>> fetchCategoriesFromApi() async {
+  try {
+    final response = await dio.get(
+      'http://10.0.2.2:3000/api/categories',
+      options: Options(contentType: Headers.jsonContentType),
+    );
+    if (response.statusCode == 200 && response.data['success'] == true) {
+      final List items = response.data['categories'];
+      return items.cast<Map<String, dynamic>>();
+    }
+  } catch (e) {
+    debugPrint('Erreur réseau fetchCategoriesFromApi: $e');
+  }
+  return [];
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/route/screen_export.dart';
+import 'package:shop/screens/checkout/cart_notifier.dart';
+import 'package:shop/services/auth_service.dart';
 
 class EntryPoint extends StatefulWidget {
   const EntryPoint({super.key});
@@ -15,12 +17,33 @@ class _EntryPointState extends State<EntryPoint> {
   final List _pages = const [
     HomeScreen(),
     DiscoverScreen(),
-    BookmarkScreen(),
+    ProductsScreen(),
     // EmptyCartScreen(), // if Cart is empty
     CartScreen(),
     ProfileScreen(),
   ];
   int _currentIndex = 0;
+  int cartCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCartCount();
+    cartUpdateNotifier.addListener(_fetchCartCount);
+  }
+
+  @override
+  void dispose() {
+    cartUpdateNotifier.removeListener(_fetchCartCount);
+    super.dispose();
+  }
+
+  Future<void> _fetchCartCount() async {
+    final items = await fetchCartItems();
+    setState(() {
+      cartCount = items.fold<int>(0, (sum, item) => sum + (item['quantite'] ?? 1) as int);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +73,7 @@ class _EntryPointState extends State<EntryPoint> {
           colorFilter: ColorFilter.mode(
               Theme.of(context).iconTheme.color!, BlendMode.srcIn),
           height: 20,
-          width: 100,
+          width: 80,
         ),
         actions: [
           IconButton(
@@ -76,6 +99,45 @@ class _EntryPointState extends State<EntryPoint> {
                   Theme.of(context).textTheme.bodyLarge!.color!,
                   BlendMode.srcIn),
             ),
+          ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _currentIndex = 3; // index du CartScreen
+                  });
+                },
+                icon: SvgPicture.asset(
+                  "assets/icons/shopping-cart.svg",
+                  height: 24,
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).textTheme.bodyLarge!.color!,
+                      BlendMode.srcIn),
+                ),
+              ),
+              if (cartCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '$cartCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -122,13 +184,13 @@ class _EntryPointState extends State<EntryPoint> {
             BottomNavigationBarItem(
               icon: svgIcon("assets/icons/discover-icon.svg"),
               activeIcon:
-                  svgIcon("assets/icons/discover-icon.svg", color: primaryColor),
+              svgIcon("assets/icons/discover-icon.svg", color: primaryColor),
               label: "Découvrir",
             ),
             BottomNavigationBarItem(
               icon: svgIcon("assets/icons/cart-shop.svg"),
               activeIcon:
-                  svgIcon("assets/icons/cart-shop.svg", color: primaryColor),
+              svgIcon("assets/icons/cart-shop.svg", color: primaryColor),
               label: "Nos Produits",
             ),
             BottomNavigationBarItem(
@@ -139,7 +201,7 @@ class _EntryPointState extends State<EntryPoint> {
             BottomNavigationBarItem(
               icon: svgIcon("assets/icons/user-icon.svg"),
               activeIcon:
-                  svgIcon("assets/icons/user-icon.svg", color: primaryColor),
+              svgIcon("assets/icons/user-icon.svg", color: primaryColor),
               label: "Profil",
             ),
           ],

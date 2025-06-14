@@ -34,18 +34,20 @@ class ProductDetailsScreen extends StatelessWidget {
       brandName: '',
       description: '',
       price: 0,
+      categorie: '', // Ajouté pour éviter les erreurs
     );
 
     return Scaffold(
       bottomNavigationBar: isProductAvailable
           ? CartButton(
         price: currentProduct.computedPriceAfterDiscount,
-        press: () {
+        press: () async {
           customModalBottomSheet(
             context,
             height: MediaQuery.of(context).size.height * 0.92,
             child: ProductBuyNowScreen(product: currentProduct),
           );
+          return;
         },
       )
           : NotifyMeCard(
@@ -71,15 +73,28 @@ class ProductDetailsScreen extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(defaultPadding),
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: 1.2,
-                    child: Image.network(
-                      currentProduct.image,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 80, color: Colors.grey),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: AspectRatio(
+                        aspectRatio: 1.2,
+                        child: Image.network(
+                          currentProduct.image,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 80, color: Colors.grey),
+                        ),
+                      ),
                     ),
-                  ),
+                    if (currentProduct.categorie != null && currentProduct.categorie!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        currentProduct.categorie!.split(',').map((e) => e.trim()).join(', '),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontSize: 13, color: Colors.blueGrey),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
@@ -154,6 +169,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         price: product.price,
                         priceAfterDiscount: product.priceAfterDiscount,
                         discountPercent: product.discountPercent,
+                        categorie: product.categorie, // Ajouté
                         press: () {
                           // Action sur produit recommandé
                         },

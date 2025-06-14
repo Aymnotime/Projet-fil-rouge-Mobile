@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
+import '../screens/checkout/cart_notifier.dart';
 
 class CartButton extends StatelessWidget {
   const CartButton({
@@ -13,7 +14,7 @@ class CartButton extends StatelessWidget {
 
   final double price;
   final String title, subTitle;
-  final VoidCallback press;
+  final Future<void> Function() press;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,10 @@ class CartButton extends StatelessWidget {
               ),
             ),
             child: InkWell(
-              onTap: press,
+              onTap: () async {
+                await press();
+                cartUpdateNotifier.value++;
+              },
               child: Row(
                 children: [
                   Expanded(
