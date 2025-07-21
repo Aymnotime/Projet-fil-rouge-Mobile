@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop/models/product_model.dart';  // <-- import du modèle
+import 'package:shop/route/route_constants.dart';
 
 import 'package:shop/components/cart_button.dart';
 import 'package:shop/components/custom_modal_bottom_sheet.dart';
@@ -13,34 +14,59 @@ import 'components/product_list_tile.dart';
 import '../../../components/review_card.dart';
 import 'product_buy_now_screen.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+import 'package:shop/services/auth_service.dart';
+
+class ProductDetailsScreen extends StatefulWidget {
   final bool isProductAvailable;
-  final List<ProductModel> products;
+  final ProductModel currentProduct;
 
   const ProductDetailsScreen({
     super.key,
     this.isProductAvailable = true,
-    required this.products,
+    required this.currentProduct,
   });
 
   @override
+  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  List<ProductModel> allProducts = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
+
+  Future<void> fetchProducts() async {
+    final List<Map<String, dynamic>> apiProducts = await fetchStockItems();
+    setState(() {
+      allProducts = apiProducts.map((e) => ProductModel.fromJson(e)).toList();
+      isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final ProductModel currentProduct = products.isNotEmpty
-        ? products[0]
-        : ProductModel(
-      id: '', // Ajout de l'id obligatoire
-      image: '',
-      title: 'Produit indisponible',
-      brandName: '',
-      description: '',
-      price: 0,
-      categorie: '', // Ajouté pour éviter les erreurs
-    );
+    final ProductModel currentProduct = widget.currentProduct;
+
+    // Filtrer les produits similaires par catégorie (hors produit courant)
+    final String? currentCategorie = currentProduct.categorie;
+    final List<ProductModel> similarProducts = allProducts
+        .where((p) =>
+    p.id != currentProduct.id &&
+        p.categorie != null &&
+        currentCategorie != null &&
+        p.categorie!.trim().toLowerCase() == currentCategorie.trim().toLowerCase())
+        .take(6)
+        .toList();
 
     return Scaffold(
-      bottomNavigationBar: isProductAvailable
+      bottomNavigationBar: widget.isProductAvailable
           ? CartButton(
-        price: currentProduct.computedPriceAfterDiscount,
+        price: currentProduct.displayPrice,
         press: () async {
           customModalBottomSheet(
             context,
@@ -55,7 +81,9 @@ class ProductDetailsScreen extends StatelessWidget {
         onChanged: (value) {},
       ),
       body: SafeArea(
-        child: CustomScrollView(
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : CustomScrollView(
           slivers: [
             SliverAppBar(
               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -98,11 +126,49 @@ class ProductDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (currentProduct.isPromo) ...[
+                      Text(
+                        '${currentProduct.price.toStringAsFixed(2)} €',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${currentProduct.displayPrice.toStringAsFixed(2)} €',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ] else ...[
+                      Text(
+                        '${currentProduct.displayPrice.toStringAsFixed(2)} €',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
             ProductInfo(
               brand: currentProduct.brandName,
               title: currentProduct.title,
-              isAvailable: isProductAvailable,
-              description: currentProduct.description, // Utilisation de la description dynamique de l'API
+              isAvailable: widget.isProductAvailable,
+              description: currentProduct.description,
               rating: 4.4,
               numOfReviews: 126,
             ),
@@ -137,7 +203,11 @@ class ProductDetailsScreen extends StatelessWidget {
               title: "Avis",
               isShowBottomBorder: true,
               press: () {
-                Navigator.pushNamed(context, '/productReviews');
+                Navigator.pushNamed(
+                  context,
+                  productReviewsScreenRoute,
+                  arguments: currentProduct,
+                );
               },
             ),
             SliverPadding(
@@ -149,36 +219,38 @@ class ProductDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 220,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    final product = products[index];
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        left: defaultPadding,
-                        right: index == products.length - 1 ? defaultPadding : 0,
-                      ),
-                      child: ProductCard(
-                        image: product.image,
-                        title: product.title,
-                        brandName: product.brandName,
-                        price: product.price,
-                        priceAfterDiscount: product.priceAfterDiscount,
-                        discountPercent: product.discountPercent,
-                        categorie: product.categorie, // Ajouté
-                        press: () {
-                          // Action sur produit recommandé
-                        },
-                      ),
-                    );
-                  },
+            if (similarProducts.isNotEmpty)
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: similarProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = similarProducts[index];
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          left: defaultPadding,
+                          right: index == similarProducts.length - 1 ? defaultPadding : 0,
+                        ),
+                        child: ProductCard(
+                          image: product.image,
+                          title: product.title,
+                          brandName: product.brandName,
+                          // Affichage prix promo sur la card
+                          price: product.prix_promo ?? product.price,
+                          categorie: product.categorie,
+                          press: () {
+                            // Action sur produit recommandé
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ),
+              )
+            else
+              const SliverToBoxAdapter(child: SizedBox.shrink()),
             const SliverToBoxAdapter(
               child: SizedBox(height: defaultPadding),
             ),
@@ -188,3 +260,4 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 }
+

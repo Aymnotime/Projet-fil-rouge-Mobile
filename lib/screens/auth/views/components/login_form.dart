@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:form_field_validator/form_field_validator.dart';
+
 
 import '../../../../constants.dart';
-
-
-
-const pasNotMatchErrorText = "Les mots de passe ne correspondent pas";
+import 'validators.dart';
 
 class LogInForm extends StatelessWidget {
   const LogInForm({
@@ -28,7 +25,7 @@ class LogInForm extends StatelessWidget {
         children: [
           TextFormField(
             controller: emailController,
-            validator: emaildValidator.call,
+            validator: emailValidator.call,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
@@ -53,8 +50,8 @@ class LogInForm extends StatelessWidget {
           const SizedBox(height: defaultPadding),
           TextFormField(
             controller: passwordController,
-            // Simplification de la validation pour le login
-            validator: RequiredValidator(errorText: 'Mot de passe requis'),
+            // Pour le login, on vérifie juste que le champ n'est pas vide
+            validator: (value) => value == null || value.isEmpty ? "Mot de passe requis" : null,
             obscureText: true,
             decoration: InputDecoration(
               hintText: "Password",

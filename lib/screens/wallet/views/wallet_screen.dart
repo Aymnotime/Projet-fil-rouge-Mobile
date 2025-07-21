@@ -53,8 +53,7 @@ class WalletScreen extends StatelessWidget {
                           brandName: "Lipsy london",
                           description: "",
                           price: 540,
-                          priceAfterDiscount: 420,
-                          discountPercent: 20,
+                          prix_promo: 420,
                         ),
                         ProductModel(
                           id: '2',

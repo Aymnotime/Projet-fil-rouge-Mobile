@@ -15,6 +15,7 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  // Carrousel supprimé : ProductsScreen ne gère que la liste filtrable
   List<ProductModel> allProducts = [];
   List<ProductModel> filteredProducts = [];
   bool isLoading = true;
@@ -86,7 +87,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
         final matchCategory = selectedCategories.isEmpty || prodCats.any((cat) => selectedCategories.contains(cat));
         final matchBrand = selectedBrand == null || selectedBrand == '' || p.brandName == selectedBrand;
         final matchPrice = p.price >= currentMinPrice && p.price <= currentMaxPrice;
-        final matchPromo = !onlyPromo || (p.discountPercent != null && p.discountPercent! > 0);
+        // Un produit est en promo si prix_promo existe, > 0 et < prix
+        final isPromo = p.prix_promo != null && p.prix_promo! > 0 && p.prix_promo! < p.price;
+        final matchPromo = !onlyPromo || isPromo;
         return matchSearch && matchCategory && matchBrand && matchPrice && matchPromo;
       }).toList();
     });
@@ -308,9 +311,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     image: product.image,
                     title: product.title,
                     brandName: product.brandName,
+                    prixPromo: product.prix_promo,
                     price: product.price,
-                    priceAfterDiscount: product.priceAfterDiscount,
-                    discountPercent: product.discountPercent,
                     categorie: product.categorie,
                     press: () {
                       Navigator.pushNamed(

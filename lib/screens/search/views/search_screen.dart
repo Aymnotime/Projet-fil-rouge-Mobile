@@ -125,7 +125,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
                       title: Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600)),
                       subtitle: Text(p.brandName ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
-                      trailing: Text('${p.priceAfterDiscount?.toStringAsFixed(2) ?? p.price.toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      trailing: Text('${p.prix_promo?.toStringAsFixed(2) ?? p.price.toStringAsFixed(2)} €', style: const TextStyle(fontWeight: FontWeight.bold)),
                       onTap: () {
                         Navigator.pushNamed(
                           context,

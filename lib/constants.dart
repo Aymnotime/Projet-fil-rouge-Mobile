@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:form_field_validator/form_field_validator.dart';
 
 // Just for demo
 const productDemoImg1 = "https://i.imgur.com/CGCyp1d.png";
@@ -18,7 +17,7 @@ const grandisExtendedFont = "Grandis Extended";
 const Color primaryColor = Color(0xFF7B61FF);
 
 const MaterialColor primaryMaterialColor =
-    MaterialColor(0xFF9581FF, <int, Color>{
+MaterialColor(0xFF9581FF, <int, Color>{
   50: Color(0xFFEFECFF),
   100: Color(0xFFD7D0FF),
   200: Color(0xFFBDB0FF),
@@ -65,17 +64,3 @@ const Color errorColor = Color(0xFFEA5B5B);
 const double defaultPadding = 16.0;
 const double defaultBorderRadious = 12.0;
 const Duration defaultDuration = Duration(milliseconds: 300);
-
-final passwordValidator = MultiValidator([
-  RequiredValidator(errorText: 'Mot de passe requis'),
-  MinLengthValidator(12, errorText: 'Le mot de passe doit contenir au moins 12 caractères'),
-  PatternValidator(r'(?=.*?[#?!@$%^&*-])',
-      errorText: 'Le mot de passe doit contenir au moins un caractère spécial')
-]);
-
-final emaildValidator = MultiValidator([
-  RequiredValidator(errorText: 'Email requis'),
-  EmailValidator(errorText: "Enter une adresse mail valide"),
-]);
-
-const pasNotMatchErrorText = "Les mots de passe ne correspondent pas";

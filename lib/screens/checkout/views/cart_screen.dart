@@ -4,6 +4,9 @@ import 'package:shop/services/auth_service.dart';
 import '../cart_notifier.dart';
 import 'package:shop/models/product_model.dart';
 import 'package:shop/screens/product/views/product_details_screen.dart';
+import 'package:shop/route/route_constants.dart';
+
+
 
 
 class CartScreen extends StatefulWidget {
@@ -17,7 +20,15 @@ class _CartScreenState extends State<CartScreen> {
   List<Map<String, dynamic>> cartItems = [];
   bool isLoading = true;
 
-  double get total => cartItems.fold(0, (sum, item) => sum + ((item['prix'] ?? 0) as num).toDouble() * ((item['quantite'] ?? 1) as int));
+  double get total => cartItems.fold(0, (sum, item) {
+    final prixPromo = (item['prix_promo'] as num?)?.toDouble();
+    final prix = (item['prix'] ?? 0) as num;
+    final quantite = (item['quantite'] ?? 1) as int;
+    if (prixPromo != null && prixPromo > 0 && prixPromo < prix) {
+      return sum + prixPromo * quantite;
+    }
+    return sum + prix.toDouble() * quantite;
+  });
 
   @override
   void initState() {
@@ -45,6 +56,10 @@ class _CartScreenState extends State<CartScreen> {
       cartItems = items;
       isLoading = false;
     });
+
+    // Mettre à jour le compteur global du panier
+    cartUpdateNotifier.value = cartItems.fold<int>(0, (sum, item) => sum + (item['quantite'] ?? 1) as int);
+
     debugPrint('fetchCart: cartItems in state = ' + cartItems.toString());
   }
 
@@ -53,6 +68,10 @@ class _CartScreenState extends State<CartScreen> {
     debugPrint('incrementQuantity: id_produit=${cartItems[index]['id_produit']}, quantite=${cartItems[index]['quantite']}');
     final result = await updateCartQuantity(cartItems[index]['id_produit'].toString(), cartItems[index]['quantite']);
     debugPrint('incrementQuantity: updateCartQuantity result = $result');
+
+    // ⚠️ IMPORTANT : Mettre à jour le compteur global du panier
+    cartUpdateNotifier.value = cartItems.fold<int>(0, (sum, item) => sum + (item['quantite'] ?? 1) as int);
+
     fetchCart();
   }
 
@@ -66,7 +85,13 @@ class _CartScreenState extends State<CartScreen> {
       debugPrint('decrementQuantity: remove id_produit=${cartItems[index]['id_produit']}');
       final result = await removeFromCart(cartItems[index]['id_produit'].toString());
       debugPrint('decrementQuantity: removeFromCart result = $result');
+      // Retirer l'item de la liste locale
+      setState(() { cartItems.removeAt(index); });
     }
+
+    // ⚠️ IMPORTANT : Mettre à jour le compteur global du panier
+    cartUpdateNotifier.value = cartItems.fold<int>(0, (sum, item) => sum + (item['quantite'] ?? 1) as int);
+
     fetchCart();
   }
 
@@ -95,10 +120,33 @@ class _CartScreenState extends State<CartScreen> {
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (context, index) {
           final item = cartItems[index];
+          final prixPromo = (item['prix_promo'] as num?)?.toDouble();
+          final prix = (item['prix'] ?? 0) as num;
+          final isPromo = prixPromo != null && prixPromo > 0 && prixPromo < prix;
           return ListTile(
             leading: Image.network(item['image'] as String, width: 60, height: 60, fit: BoxFit.cover),
             title: Text(item['nom'] as String),
-            subtitle: Text('Prix : \\${((item['prix'] ?? 0) as num).toDouble()} €'),
+            subtitle: isPromo
+                ? Row(
+              children: [
+                Text(
+                  '${prix.toStringAsFixed(2)} €',
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '${prixPromo.toStringAsFixed(2)} €',
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            )
+                : Text('Prix : ${prix.toStringAsFixed(2)} €'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -114,27 +162,12 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
             onTap: () {
-              // Navigation vers la fiche produit
-              Navigator.push(
+              // Navigation vers la fiche produit (hérite de ProductsScreen)
+              final product = ProductModel.fromJson(item);
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ProductDetailsScreen(
-                    isProductAvailable: true,
-                    products: [
-                      ProductModel(
-                        id: item['id_produit'].toString(),
-                        image: item['image'] ?? '',
-                        title: item['nom'] ?? '',
-                        brandName: item['marque'] ?? '',
-                        description: item['description'] ?? '',
-                        price: (item['prix'] ?? 0).toDouble(),
-                        categorie: item['categorie'] ?? '',
-                        priceAfterDiscount: item['prix_apres_remise'] != null ? (item['prix_apres_remise'] as num).toDouble() : null,
-                        discountPercent: item['discountPercent'] as int?,
-                      ),
-                    ],
-                  ),
-                ),
+                productDetailsScreenRoute,
+                arguments: product,
               );
             },
           );

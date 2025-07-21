@@ -23,7 +23,7 @@ class WalletHistoryCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius:
-            const BorderRadius.all(Radius.circular(defaultBorderRadious)),
+        const BorderRadius.all(Radius.circular(defaultBorderRadious)),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
@@ -60,7 +60,7 @@ class WalletHistoryCard extends StatelessWidget {
           const SizedBox(height: defaultPadding),
           ...List.generate(
             products.length,
-            (index) => Padding(
+                (index) => Padding(
               padding: const EdgeInsets.only(
                   bottom: defaultPadding,
                   left: defaultPadding,
@@ -70,7 +70,7 @@ class WalletHistoryCard extends StatelessWidget {
                 brandName: products[index].brandName,
                 title: products[index].title,
                 price: products[index].price,
-                priceAfterDiscount: products[index].priceAfetDiscount,
+                prixPromo: products[index].prix_promo,
                 style: ElevatedButton.styleFrom(
                   maximumSize: const Size(double.infinity, 90),
                   padding: EdgeInsets.zero,

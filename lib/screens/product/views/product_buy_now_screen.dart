@@ -42,7 +42,7 @@ class _ProductBuyNowScreenState extends State<ProductBuyNowScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double unitPrice = (widget.product.priceAfterDiscount ?? widget.product.price).toDouble();
+    double unitPrice = (widget.product.prix_promo ?? widget.product.price).toDouble();
     double totalPrice = unitPrice * quantity;
 
     return Scaffold(
@@ -123,7 +123,7 @@ class _ProductBuyNowScreenState extends State<ProductBuyNowScreen> {
                         Expanded(
                           child: UnitPrice(
                             price: widget.product.price,
-                            priceAfterDiscount: widget.product.priceAfterDiscount,
+                            prixPromo: widget.product.prix_promo,
                           ),
                         ),
                         ProductQuantity(

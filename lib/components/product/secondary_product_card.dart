@@ -10,15 +10,13 @@ class SecondaryProductCard extends StatelessWidget {
     required this.brandName,
     required this.title,
     required this.price,
-    this.priceAfterDiscount,
-    this.discountPercent,
+    this.prixPromo,
     this.press,
     this.style,
   });
   final String image, brandName, title;
   final double price;
-  final double? priceAfterDiscount;
-  final int? discountPercent;
+  final double? prixPromo;
   final VoidCallback? press;
 
   final ButtonStyle? style;
@@ -39,28 +37,7 @@ class SecondaryProductCard extends StatelessWidget {
             child: Stack(
               children: [
                 NetworkImageWithLoader(image, radius: defaultBorderRadious),
-                if (discountPercent != null)
-                  Positioned(
-                    right: defaultPadding / 2,
-                    top: defaultPadding / 2,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: defaultPadding / 2),
-                      height: 16,
-                      decoration: const BoxDecoration(
-                        color: errorColor,
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(defaultBorderRadious)),
-                      ),
-                      child: Text(
-                        "$discountPercent% off",
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  )
+                // Plus de discountPercent ni badge promo
               ],
             ),
           ),
@@ -89,11 +66,11 @@ class SecondaryProductCard extends StatelessWidget {
                         .copyWith(fontSize: 12),
                   ),
                   const Spacer(),
-                  priceAfterDiscount != null
+                  prixPromo != null && prixPromo! < price
                       ? Row(
                     children: [
                       Text(
-                        "\$${priceAfterDiscount}",
+                        "\$${prixPromo}",
                         style: const TextStyle(
                           color: Color(0xFF31B0D8),
                           fontWeight: FontWeight.w500,

@@ -10,15 +10,13 @@ class ProductCard extends StatelessWidget {
     required this.brandName,
     required this.title,
     required this.price,
-    this.priceAfterDiscount,
-    this.discountPercent,
+    this.prixPromo,
     required this.press,
     this.categorie, // Ajout catégorie
   });
   final String image, brandName, title;
   final double price;
-  final double? priceAfterDiscount;
-  final int? discountPercent;
+  final double? prixPromo;
   final VoidCallback press;
   final String? categorie; // Ajout catégorie
 
@@ -29,8 +27,8 @@ class ProductCard extends StatelessWidget {
         press();
       },
       style: OutlinedButton.styleFrom(
-          minimumSize: const Size(140, 220),
-          maximumSize: const Size(140, 220),
+          minimumSize: const Size(140, 180),
+          maximumSize: const Size(140, 180),
           padding: const EdgeInsets.all(8)),
       child: Column(
         children: [
@@ -39,28 +37,7 @@ class ProductCard extends StatelessWidget {
             child: Stack(
               children: [
                 NetworkImageWithLoader(image, radius: defaultBorderRadious),
-                if (discountPercent != null)
-                  Positioned(
-                    right: defaultPadding / 2,
-                    top: defaultPadding / 2,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: defaultPadding / 2),
-                      height: 16,
-                      decoration: const BoxDecoration(
-                        color: errorColor,
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(defaultBorderRadious)),
-                      ),
-                      child: Text(
-                        "$discountPercent% off",
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  )
+                // Plus de discountPercent ni badge promo
               ],
             ),
           ),
@@ -101,35 +78,30 @@ class ProductCard extends StatelessWidget {
                         .copyWith(fontSize: 12),
                   ),
                   const Spacer(),
-                  priceAfterDiscount != null
+                  prixPromo != null && prixPromo! < price
                       ? Row(
                     children: [
                       Text(
-                        "${priceAfterDiscount ?? price}€",
+                        "${prixPromo!.toStringAsFixed(2)}€",
                         style: const TextStyle(
                           color: Color(0xFF31B0D8),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
                         ),
                       ),
-                      if (priceAfterDiscount != null)
-                        const SizedBox(width: defaultPadding / 4),
-                      if (priceAfterDiscount != null)
-                        Text(
-                          "$price€",
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .color,
-                            fontSize: 10,
-                            decoration: TextDecoration.lineThrough,
-                          ),
+                      const SizedBox(width: defaultPadding / 4),
+                      Text(
+                        "${price.toStringAsFixed(2)}€",
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 11,
+                          decoration: TextDecoration.lineThrough,
                         ),
+                      ),
                     ],
                   )
                       : Text(
-                    "$price€",
+                    "${price.toStringAsFixed(2)}€",
                     style: const TextStyle(
                       color: Color(0xFF31B0D8),
                       fontWeight: FontWeight.w500,

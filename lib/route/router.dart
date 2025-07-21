@@ -134,11 +134,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: (context) {
           final args = settings.arguments;
           if (args is ProductModel) {
-            // ProductDetailsScreen attend une liste de produits, on l'entoure donc dans une liste
-            return ProductDetailsScreen(products: [args]);
+            return ProductDetailsScreen(currentProduct: args);
           } else {
+            // Affiche une erreur explicite si l'argument est manquant ou invalide
             return const Scaffold(
-              body: Center(child: Text('Produit invalide')),
+              body: Center(child: Text('Produit invalide : argument requis manquant')),
             );
           }
         },
@@ -174,10 +174,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const DiscoverScreen(),
       );
-    case onSaleScreenRoute:
-      return MaterialPageRoute(
-        builder: (context) => const OnSaleScreen(),
-      );
+
+  // case onSaleScreenRoute:
+  //   return MaterialPageRoute(
+  //     builder: (context) => const OnSaleScreen(),
+  //   );
 
     case searchScreenRoute:
       return MaterialPageRoute(
@@ -211,6 +212,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const UserInfoScreen(),
       );
+    case securityScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const SecurityScreen(),
+      );
+    case deliveryAddressScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const DeliveryAddressScreen(),
+      );
   // case currentPasswordScreenRoute:
   //   return MaterialPageRoute(
   //     builder: (context) => const CurrentPasswordScreen(),
@@ -219,22 +228,23 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   //   return MaterialPageRoute(
   //     builder: (context) => const EditUserInfoScreen(),
   //   );
-    case notificationsScreenRoute:
-      return MaterialPageRoute(
-        builder: (context) => const NotificationsScreen(),
-      );
-    case noNotificationScreenRoute:
-      return MaterialPageRoute(
-        builder: (context) => const NoNotificationScreen(),
-      );
-    case enableNotificationScreenRoute:
-      return MaterialPageRoute(
-        builder: (context) => const EnableNotificationScreen(),
-      );
-    case notificationOptionsScreenRoute:
-      return MaterialPageRoute(
-        builder: (context) => const NotificationOptionsScreen(),
-      );
+
+  // case notificationsScreenRoute:
+  //   return MaterialPageRoute(
+  //     builder: (context) => const NotificationsScreen(),
+  //   );
+  // case noNotificationScreenRoute:
+  //   return MaterialPageRoute(
+  //     builder: (context) => const NoNotificationScreen(),
+  //   );
+  // case enableNotificationScreenRoute:
+  //   return MaterialPageRoute(
+  //     builder: (context) => const EnableNotificationScreen(),
+  //   );
+  // case notificationOptionsScreenRoute:
+  //   return MaterialPageRoute(
+  //     builder: (context) => const NotificationOptionsScreen(),
+  //   );
   // case selectLanguageScreenRoute:
   //   return MaterialPageRoute(
   //     builder: (context) => const SelectLanguageScreen(),
@@ -251,10 +261,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   //   return MaterialPageRoute(
   //     builder: (context) => const AddNewAddressScreen(),
   //   );
-    case ordersScreenRoute:
-      return MaterialPageRoute(
-        builder: (context) => const OrdersScreen(),
-      );
+  // case ordersScreenRoute:
+  //   return MaterialPageRoute(
+  //     builder: (context) => const OrdersScreen(),
+  //   );
   // case orderProcessingScreenRoute:
   //   return MaterialPageRoute(
   //     builder: (context) => const OrderProcessingScreen(),
@@ -314,3 +324,4 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
   }
 }
+

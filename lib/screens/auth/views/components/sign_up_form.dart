@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:form_field_validator/form_field_validator.dart';
+
 
 import '../../../../constants.dart';
-
-
-final emaildValidator = MultiValidator([
-  RequiredValidator(errorText: 'Email requis'),
-  EmailValidator(errorText: "Enter une adresse mail valide"),
-]);
-
-const pasNotMatchErrorText = "Les mots de passe ne correspondent pas";
+import 'validators.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({
@@ -55,7 +48,7 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: defaultPadding),
           TextFormField(
             controller: widget.emailController,
-            validator: emaildValidator.call,
+            validator: emailValidator.call,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(

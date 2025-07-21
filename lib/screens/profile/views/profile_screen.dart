@@ -9,14 +9,33 @@ import 'package:shop/services/auth_service.dart';
 import 'components/profile_card.dart';
 import 'components/profile_menu_item_list_tile.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late Future<Map<String, dynamic>?> _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userFuture = fetchCurrentUser();
+  }
+
+  void _refreshUserData() {
+    setState(() {
+      _userFuture = fetchCurrentUser();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<Map<String, dynamic>?>(
-        future: fetchCurrentUser(),
+        future: _userFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -31,8 +50,11 @@ class ProfileScreen extends StatelessWidget {
                 name: "${user['prenom']} ${user['nom']}",
                 email: user['email'],
                 imageSrc: "",
-                press: () {
-                  Navigator.pushNamed(context, userInfoScreenRoute);
+                press: () async {
+                  final result = await Navigator.pushNamed(context, userInfoScreenRoute);
+                  if (result == true) {
+                    _refreshUserData();
+                  }
                 },
               ),
 
@@ -62,10 +84,13 @@ class ProfileScreen extends StatelessWidget {
                 press: () {},
               ),
               ProfileMenuListTile(
-                text: "Adresses",
+                text: "Adresse de livraison",
                 svgSrc: "assets/icons/Address.svg",
-                press: () {
-                  //Navigator.pushNamed(context, addressesScreenRoute);
+                press: () async {
+                  final result = await Navigator.pushNamed(context, deliveryAddressScreenRoute);
+                  if (result == true) {
+                    _refreshUserData();
+                  }
                 },
               ),
               ProfileMenuListTile(
@@ -80,6 +105,22 @@ class ProfileScreen extends StatelessWidget {
                 svgSrc: "assets/icons/Wallet.svg",
                 press: () {
                   //Navigator.pushNamed(context, walletScreenRoute);
+                },
+              ),
+              const SizedBox(height: defaultPadding),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+                child: Text(
+                  "Sécurité",
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              const SizedBox(height: defaultPadding / 2),
+              ProfileMenuListTile(
+                text: "Mot de passe",
+                svgSrc: "assets/icons/Lock.svg",
+                press: () {
+                  Navigator.pushNamed(context, securityScreenRoute);
                 },
               ),
               const SizedBox(height: defaultPadding),
