@@ -1,9 +1,10 @@
 import 'package:shop/models/product_model.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/product_api.dart';
 import 'package:flutter/material.dart';
 
-import 'package:shop/components/Banner/S/banner_s_style_1.dart';
-import 'package:shop/components/Banner/S/banner_s_style_5.dart';
+import 'package:shop/components/Banner/home/banner_1.dart';
+import 'package:shop/components/Banner/home/banner_2.dart';
+import 'package:shop/components/Banner/M/banner_m_style_1.dart';
 import 'package:shop/components/product/product_card.dart';
 
 import 'package:shop/route/route_constants.dart';
@@ -31,21 +32,12 @@ class HomeScreen extends StatelessWidget {
             final products = snapshot.data!;
             return CustomScrollView(
               slivers: [
-                // Carrousel Nouveautés
-                SliverToBoxAdapter(
-                  child: _buildCarouselSection(
-                    context,
-                    title: "Nouveautés",
-                    products: products.where((p) => p.isNew == true).toList(),
-                  ),
-                ),
+                // Banner tout en haut
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: BannerSStyle1(
-                      title: "Nouveau \n Produits",
-                      subtitle: "OFFRE SPÉCIAL",
-                      discountParcent: 20,
+                    child: BannerMStyle1(
+                      text: "Découvrez nos nouveautés et offres !",
                       press: () {},
                     ),
                   ),
@@ -58,14 +50,35 @@ class HomeScreen extends StatelessWidget {
                     products: products.where((p) => p.isBestSeller == true).toList(),
                   ),
                 ),
-                // Carrousel Flash Sale
+                // Bannière après Best Sellers
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: BannerSStyle1(
+                      title: "Nos Sélections",
+                      subtitle: "Produits recommandés",
+                      discountParcent: 20,
+                      press: () {},
+                    ),
+                  ),
+                ),
+                // Carrousel Nouveautés
                 SliverToBoxAdapter(
                   child: _buildCarouselSection(
                     context,
-                    title: "Offres spéciales",
-                    products: products.where((p) => p.isFlashSale == true).toList(),
+                    title: "Nouveautés",
+                    products: products.where((p) => p.isNew == true).toList(),
                   ),
                 ),
+                // Carrousel Populaires
+                SliverToBoxAdapter(
+                  child: _buildCarouselSection(
+                    context,
+                    title: "Populaires",
+                    products: products.where((p) => p.isPopular == true).toList(),
+                  ),
+                ),
+                // Bannière après Populaires
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -77,12 +90,12 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Carrousel Populaires
+                // Carrousel Offres spéciales
                 SliverToBoxAdapter(
                   child: _buildCarouselSection(
                     context,
-                    title: "Populaires",
-                    products: products.where((p) => p.isPopular == true).toList(),
+                    title: "Offres spéciales",
+                    products: products.where((p) => p.isFlashSale == true).toList(),
                   ),
                 ),
               ],

@@ -5,7 +5,7 @@ import 'package:shop/components/custom_modal_bottom_sheet.dart';
 import 'package:shop/components/network_image_with_loader.dart';
 import 'package:shop/screens/product/views/added_to_cart_message_screen.dart';
 import 'package:shop/models/product_model.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/cart_api.dart';
 
 import '../../../constants.dart';
 import 'components/product_quantity.dart';
@@ -20,7 +20,7 @@ class ProductBuyNowScreen extends StatefulWidget {
   });
 
   @override
-  _ProductBuyNowScreenState createState() => _ProductBuyNowScreenState();
+  State<ProductBuyNowScreen> createState() => _ProductBuyNowScreenState();
 }
 
 class _ProductBuyNowScreenState extends State<ProductBuyNowScreen> {
@@ -44,12 +44,16 @@ class _ProductBuyNowScreenState extends State<ProductBuyNowScreen> {
   Widget build(BuildContext context) {
     double unitPrice = (widget.product.prix_promo ?? widget.product.price).toDouble();
     double totalPrice = unitPrice * quantity;
+    // Formatage du prix total : pas de décimales si entier
+    String totalPriceStr = totalPrice % 1 == 0 ? totalPrice.toInt().toString() : totalPrice.toStringAsFixed(2);
 
     return Scaffold(
       bottomNavigationBar: CartButton(
-        price: totalPrice,
+        price: double.parse(totalPriceStr.replaceAll(',', '.')),
         title: "Ajouter au panier",
         subTitle: "Prix total",
+        // Affichage du prix total formaté dans le bouton
+        // On affiche le prix formaté dans le titre si besoin
         press: () async {
           debugPrint('ProductBuyNowScreen: Ajout au panier id=${widget.product.id}, quantity=$quantity');
           final result = await addToCart({

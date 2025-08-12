@@ -82,7 +82,9 @@ class ProductCard extends StatelessWidget {
                       ? Row(
                     children: [
                       Text(
-                        "${prixPromo!.toStringAsFixed(2)}€",
+                        prixPromo! % 1 == 0
+                            ? "${prixPromo!.toInt()}€"
+                            : "${prixPromo!.toStringAsFixed(2)}€",
                         style: const TextStyle(
                           color: Color(0xFF31B0D8),
                           fontWeight: FontWeight.w600,
@@ -91,7 +93,9 @@ class ProductCard extends StatelessWidget {
                       ),
                       const SizedBox(width: defaultPadding / 4),
                       Text(
-                        "${price.toStringAsFixed(2)}€",
+                        price % 1 == 0
+                            ? "${price.toInt()}€"
+                            : "${price.toStringAsFixed(2)}€",
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 11,
@@ -101,7 +105,9 @@ class ProductCard extends StatelessWidget {
                     ],
                   )
                       : Text(
-                    "${price.toStringAsFixed(2)}€",
+                    price % 1 == 0
+                        ? "${price.toInt()}€"
+                        : "${price.toStringAsFixed(2)}€",
                     style: const TextStyle(
                       color: Color(0xFF31B0D8),
                       fontWeight: FontWeight.w500,

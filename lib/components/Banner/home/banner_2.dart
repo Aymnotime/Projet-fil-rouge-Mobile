@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_svg/svg.dart';
-import '../banner_discount_tag.dart';
+
 
 import '../../../constants.dart';
 import 'banner_s.dart';
 
-class BannerSStyle1 extends StatelessWidget {
-  const BannerSStyle1({
+class BannerSStyle5 extends StatelessWidget {
+  const BannerSStyle5({
     super.key,
-    this.image = "assets/images/rog-banner2.jpg",
+    this.image = "assets/images/rog-banner2.png",
     required this.title,
     required this.press,
     this.subtitle,
-    required this.discountParcent,
+    this.bottomText,
   });
-  final String image;
+  final String? image;
   final String title;
-  final String? subtitle;
-  final int discountParcent;
+  final String? subtitle, bottomText;
+
   final VoidCallback press;
 
   @override
   Widget build(BuildContext context) {
     return BannerS(
-      image: image,
+      image: image!,
       press: press,
       children: [
         Padding(
@@ -36,6 +37,22 @@ class BannerSStyle1 extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (subtitle != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: defaultPadding / 2,
+                            vertical: defaultPadding / 8),
+                        color: Colors.white70,
+                        child: Text(
+                          subtitle!,
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: defaultPadding / 2),
                     Text(
                       title.toUpperCase(),
                       style: const TextStyle(
@@ -46,44 +63,28 @@ class BannerSStyle1 extends StatelessWidget {
                         height: 1,
                       ),
                     ),
-                    const SizedBox(height: defaultPadding / 4),
-                    if (subtitle != null)
+                    // const SizedBox(height: defaultPadding / 4),
+                    if (bottomText != null)
                       Text(
-                        subtitle!.toUpperCase(),
+                        bottomText!,
                         style: const TextStyle(
+                          fontFamily: grandisExtendedFont,
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
                           fontSize: 12,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      )
                   ],
                 ),
               ),
               const SizedBox(width: defaultPadding),
-              SizedBox(
-                height: 48,
-                width: 48,
-                child: ElevatedButton(
-                  onPressed: press,
-                  style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    backgroundColor: Colors.white,
-                  ),
-                  child: SvgPicture.asset(
-                    "assets/icons/Arrow - Right.svg",
-                    colorFilter:
-                        const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                  ),
-                ),
+              SvgPicture.asset(
+                "assets/icons/miniRight.svg",
+                height: 28,
+                colorFilter:
+                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
               ),
             ],
-          ),
-        ),
-        Align(
-          alignment: Alignment.topCenter,
-          child: BannerDiscountTag(
-            percentage: discountParcent,
-            height: 56,
           ),
         ),
       ],

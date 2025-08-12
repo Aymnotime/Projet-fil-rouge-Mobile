@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/route/screen_export.dart';
 import 'package:shop/screens/checkout/cart_notifier.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/cart_api.dart';
 import 'package:shop/screens/home/views/home_screen.dart';
 
 class EntryPoint extends StatefulWidget {
@@ -106,12 +106,29 @@ class _EntryPointState extends State<EntryPoint> {
         leading: const SizedBox(),
         leadingWidth: 0,
         centerTitle: false,
-        title: SvgPicture.asset(
-          "assets/logo/tech-shop.svg",
-          colorFilter: ColorFilter.mode(
-              Theme.of(context).iconTheme.color!, BlendMode.srcIn),
-          height: 20,
-          width: 80,
+        title: Row(
+          children: [
+            SvgPicture.asset(
+              "assets/logo/cyna.png",
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).iconTheme.color!, BlendMode.srcIn),
+              height: 28,
+              width: 28,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                "Cyna Shop",
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).iconTheme.color,
+                  fontSize: 22,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(

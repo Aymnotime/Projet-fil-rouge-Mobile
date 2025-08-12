@@ -29,7 +29,7 @@ class LogInForm extends StatelessWidget {
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              hintText: "Email address",
+              hintText: "Email",
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(vertical: defaultPadding * 0.75),
                 child: SvgPicture.asset(
@@ -50,11 +50,10 @@ class LogInForm extends StatelessWidget {
           const SizedBox(height: defaultPadding),
           TextFormField(
             controller: passwordController,
-            // Pour le login, on vérifie juste que le champ n'est pas vide
             validator: (value) => value == null || value.isEmpty ? "Mot de passe requis" : null,
             obscureText: true,
             decoration: InputDecoration(
-              hintText: "Password",
+              hintText: "Mot de passe",
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(vertical: defaultPadding * 0.75),
                 child: SvgPicture.asset(

@@ -2,7 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shop/screens/auth/views/components/sign_up_form.dart';
 import 'package:shop/route/route_constants.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/auth_api.dart';
+import 'package:shop/services/api/send_mail_api.dart';
+
 import '../../../constants.dart';
 
 
@@ -32,7 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           children: [
             Image.asset(
-              "assets/images/imagepc.jpg",
+              "assets/images/cyna.png",
               height: MediaQuery.of(context).size.height * 0.35,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -74,22 +76,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text: "J'accepte les ",
                             children: [
+                              const TextSpan(
+                                text: "J'accepte les ",
+                              ),
                               TextSpan(
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    Navigator.pushNamed(
-                                        context, termsOfServicesScreenRoute);
+                                    Navigator.pushNamed(context, cguScreenRoute);
                                   },
-                                text: "conditions d'utilisations ",
+                                text: "conditions d'utilisations",
                                 style: const TextStyle(
                                   color: primaryColor,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const TextSpan(
-                                text: "& politique de confidentialité.",
+                                text: " & ",
+                              ),
+                              TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.pushNamed(context, privacyPolicyScreenRoute);
+                                  },
+                                text: "politique de confidentialité.",
+                                style: const TextStyle(
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
@@ -114,6 +128,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         );
                         setState(() => _isLoading = false);
                         if (error == null) {
+                          // Récupère l’utilisateur courant pour obtenir l’id
+                          final user = await fetchCurrentUser();
+                          if (user != null && user['id'] != null) {
+                            await SendMailApi.sendWelcomeMail(userId: user['id']);
+                          }
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             entryPointScreenRoute,

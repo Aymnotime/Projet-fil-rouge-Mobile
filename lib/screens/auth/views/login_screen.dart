@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/route/route_constants.dart';
-import 'package:shop/services/auth_service.dart'; // <-- Ajoute cet import
+import 'package:shop/services/api/auth_api.dart';
 
 import 'components/login_form.dart';
 
@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             Image.asset(
-              "assets/images/imagepc.jpg",
+              "assets/images/cyna.png",
               fit: BoxFit.cover,
             ),
             Padding(

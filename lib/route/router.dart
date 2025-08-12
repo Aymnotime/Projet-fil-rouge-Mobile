@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shop/entry_point.dart';
 import 'package:shop/models/product_model.dart';
 import 'package:shop/screens/products/views/products_screen.dart';
-import 'screen_export.dart';
+import 'package:shop/route/screen_export.dart';
+
 
 // Yuo will get 50+ screens and more once you have the full template
 // 🔗 Full template: https://theflutterway.gumroad.com/l/fluttershop
@@ -64,11 +65,33 @@ import 'screen_export.dart';
 // 🔗 Full template: https://theflutterway.gumroad.com/l/fluttershop
 
 Route<dynamic> generateRoute(RouteSettings settings) {
+  if (settings.name == successOrderScreenRoute) {
+    return MaterialPageRoute(builder: (context) => const SuccessOrderScreen());
+  }
+  // Ajout des routes personnalisées
+  if (settings.name == cguScreenRoute) {
+    return MaterialPageRoute(builder: (context) => const CguScreen());
+  }
+  if (settings.name == privacyPolicyScreenRoute) {
+    return MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen());
+  }
+  if (settings.name == contactServiceScreenRoute) {
+    return MaterialPageRoute(builder: (context) => const ContactServiceScreen());
+  }
+  if (settings.name == faqScreenRoute) {
+    return MaterialPageRoute(builder: (context) => const FaqScreen());
+  }
   switch (settings.name) {
-    case onbordingScreenRoute:
+    case paymentDetailsScreenRoute:
       return MaterialPageRoute(
-        builder: (context) => const OnBordingScreen(),
+        builder: (context) => const PaymentDetailsScreen(),
       );
+    case orderDetailsScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const OrderDetailsScreen(),
+      );
+
+
   // case preferredLanuageScreenRoute:
   //   return MaterialPageRoute(
   //     builder: (context) => const PreferredLanguageScreen(),
@@ -166,18 +189,19 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   //   return MaterialPageRoute(
   //     builder: (context) => const DiscoverWithImageScreen(),
   //   );
-  // case subDiscoverScreenRoute:
-  //   return MaterialPageRoute(
-  //     builder: (context) => const SubDiscoverScreen(),
-  //   );
-    case discoverScreenRoute:
+    case emptyWalletScreenRoute:
       return MaterialPageRoute(
-        builder: (context) => const DiscoverScreen(),
+        builder: (context) => const EmptyWalletScreen(),
+      );
+    case walletScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const WalletScreen(),
+      );
+    case cartScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const CartScreen(),
       );
 
-  // case onSaleScreenRoute:
-  //   return MaterialPageRoute(
-  //     builder: (context) => const OnSaleScreen(),
   //   );
 
     case searchScreenRoute:
@@ -191,6 +215,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case productsScreenRoute:
       return MaterialPageRoute(
         builder: (context) => const ProductsScreen(),
+        settings: settings,
       );
     case entryPointScreenRoute:
       return MaterialPageRoute(
@@ -253,18 +278,28 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   //   return MaterialPageRoute(
   //     builder: (context) => const NoAddressScreen(),
   //   );
-    case addressesScreenRoute:
-      return MaterialPageRoute(
-        builder: (context) => const AddressesScreen(),
-      );
+
   // case addNewAddressesScreenRoute:
   //   return MaterialPageRoute(
   //     builder: (context) => const AddNewAddressScreen(),
   //   );
-  // case ordersScreenRoute:
-  //   return MaterialPageRoute(
-  //     builder: (context) => const OrdersScreen(),
-  //   );
+    case ordersScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const OrdersScreen(),
+      );
+
+    case resetPasswordScreenRoute:
+      final args = settings.arguments;
+      if (args is String) {
+        return MaterialPageRoute(
+          builder: (context) => ResetPasswordScreen(token: args),
+        );
+      }
+      return MaterialPageRoute(
+        builder: (context) => const Scaffold(
+          body: Center(child: Text('Token manquant pour la réinitialisation')), // fallback
+        ),
+      );
   // case orderProcessingScreenRoute:
   //   return MaterialPageRoute(
   //     builder: (context) => const OrderProcessingScreen(),
@@ -297,6 +332,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const EmptyWalletScreen(),
       );
+
     case walletScreenRoute:
       return MaterialPageRoute(
         builder: (context) => const WalletScreen(),
@@ -305,6 +341,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const CartScreen(),
       );
+
   // case paymentMethodScreenRoute:
   //   return MaterialPageRoute(
   //     builder: (context) => const PaymentMethodScreen(),
@@ -319,9 +356,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   //   );
     default:
       return MaterialPageRoute(
-        // Make a screen for undefine
-        builder: (context) => const OnBordingScreen(),
+        builder: (context) => const Scaffold(
+          body: Center(child: Text('Page non trouvée')),
+        ),
       );
   }
 }
-

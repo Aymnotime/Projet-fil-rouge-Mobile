@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop/constants.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/auth_api.dart';
 import 'package:shop/screens/auth/views/components/validators.dart';
 
 class SecurityScreen extends StatefulWidget {

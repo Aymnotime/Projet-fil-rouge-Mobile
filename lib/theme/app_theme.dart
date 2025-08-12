@@ -31,5 +31,27 @@ class AppTheme {
     );
   }
 
-  // Dark theme is inclided in the Full template
+  static ThemeData darkTheme(BuildContext context) {
+    return ThemeData(
+      brightness: Brightness.dark,
+      fontFamily: "Plus Jakarta",
+      primarySwatch: primaryMaterialColor,
+      primaryColor: primaryColor,
+      scaffoldBackgroundColor: blackColor,
+      iconTheme: const IconThemeData(color: Colors.white),
+      textTheme: const TextTheme(
+        bodyMedium: TextStyle(color: whileColor40),
+      ),
+      elevatedButtonTheme: elevatedButtonThemeData,
+      textButtonTheme: textButtonThemeData,
+      outlinedButtonTheme: outlinedButtonTheme(borderColor: whileColor40),
+      inputDecorationTheme: darkInputDecorationTheme,
+      checkboxTheme: checkboxThemeData.copyWith(
+        side: const BorderSide(color: whileColor40),
+      ),
+      appBarTheme: appBarDarkTheme,
+      scrollbarTheme: scrollbarThemeData,
+      dataTableTheme: dataTableDarkThemeData,
+    );
+  }
 }

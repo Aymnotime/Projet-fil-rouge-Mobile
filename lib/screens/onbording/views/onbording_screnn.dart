@@ -19,7 +19,7 @@ class _OnBordingScreenState extends State<OnBordingScreen> {
   final List<Onbord> _onbordData = [
     Onbord(
       image: "assets/Illustration/Illustration-0.png",
-      imageDarkTheme: "assets/Illustration/Illustration_darkTheme_0.png",
+      imageDarkTheme: "assets/Illustration/",
       title: "Find the item you’ve \nbeen looking for",
       description:
           "Here you’ll see rich varieties of goods, carefully classified for seamless browsing experience.",

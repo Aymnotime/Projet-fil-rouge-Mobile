@@ -50,7 +50,7 @@ class ProductModel {
     );
   }
 
-  // Retourne le prix à afficher (promo si présent, sinon calcul, sinon prix normal)
+  // Prix à utiliser pour les calculs
   double get displayPrice {
     if (prix_promo != null && prix_promo! > 0 && prix_promo! < price) {
       return prix_promo!;
@@ -58,7 +58,16 @@ class ProductModel {
     return price;
   }
 
+  // Prix formaté pour l'affichage
+  String get displayPriceFormatted {
+    double value = displayPrice;
+    if (value % 1 == 0) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(2);
+  }
+
   // Indique si le produit est en promo
-// ...
-  bool get isPromo => prix_promo != null && prix_promo! > 0 && prix_promo! < price;
+  bool get isPromo =>
+      prix_promo != null && prix_promo! > 0 && prix_promo! < price;
 }

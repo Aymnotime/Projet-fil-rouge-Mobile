@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/models/product_model.dart';
-import 'package:shop/services/auth_service.dart';
-import 'package:shop/screens/auth/views/components/validators.dart';
+import 'package:shop/services/api/review_api.dart';
+
 
 class ProductReviewsScreen extends StatefulWidget {
   const ProductReviewsScreen({super.key});

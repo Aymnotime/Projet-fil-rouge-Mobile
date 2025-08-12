@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop/models/product_model.dart';
 import 'package:shop/route/route_constants.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/product_api.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

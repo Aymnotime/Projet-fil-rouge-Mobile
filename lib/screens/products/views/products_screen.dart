@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shop/components/product/product_card.dart';
 import 'package:shop/models/product_model.dart';
 import 'package:shop/route/route_constants.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/product_api.dart';
+import '../components/filters_screen.dart';
 import '../../search/views/components/search_form.dart';
+import 'package:shop/constants.dart';
 
-import '../../../constants.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -28,7 +29,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   double currentMinPrice = 0;
   double currentMaxPrice = 1000;
   bool onlyPromo = false;
-  bool showFilters = false; // Ajouté pour afficher/masquer le panneau de filtres
+  bool showFilters = false; // Pour afficher/masquer le panneau de filtres
 
   List<String> categories = [];
   List<String> brands = [];
@@ -36,10 +37,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      String? initialCategory;
+      if (args is Map && args['category'] is String) {
+        initialCategory = args['category'] as String;
+      }
+      fetchProducts(initialCategory: initialCategory);
+    });
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts({String? initialCategory}) async {
     try {
       final items = await fetchStockItems();
       final products = items.map((item) => ProductModel.fromJson(item)).toList();
@@ -59,16 +67,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
       final maxP = prices.isNotEmpty ? prices.reduce((a, b) => a > b ? a : b).toDouble() : 1000.0;
       setState(() {
         allProducts = products;
-        filteredProducts = products;
         categories = cats.toList();
         brands = brs;
         minPrice = minP;
         maxPrice = maxP;
         currentMinPrice = minP;
         currentMaxPrice = maxP;
-        selectedCategories = [];
+        selectedCategories = initialCategory != null ? [initialCategory] : [];
         isLoading = false;
       });
+      _filterProducts();
     } catch (e, stack) {
       debugPrint('Erreur dans fetchProducts: $e');
       debugPrint(stack.toString());
@@ -95,6 +103,30 @@ class _ProductsScreenState extends State<ProductsScreen> {
     });
   }
 
+  void _openFiltersScreen() async {
+    setState(() {
+      showFilters = true;
+    });
+  }
+
+  void _closeFilters() {
+    setState(() {
+      showFilters = false;
+    });
+  }
+
+  void _applyFilters(Map<String, dynamic> filters) {
+    setState(() {
+      selectedCategories = List<String>.from(filters['selectedCategories']);
+      selectedBrand = filters['selectedBrand'];
+      currentMinPrice = filters['currentMinPrice'];
+      currentMaxPrice = filters['currentMaxPrice'];
+      onlyPromo = filters['onlyPromo'];
+      showFilters = false;
+    });
+    _filterProducts();
+  }
+
   void _searchProducts(String? query) {
     _filterProducts(search: query);
   }
@@ -102,7 +134,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading
+      backgroundColor: Colors.white,
+      body: showFilters
+          ? FiltersPanel(
+        selectedCategories: selectedCategories,
+        selectedBrand: selectedBrand,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        currentMinPrice: currentMinPrice,
+        currentMaxPrice: currentMaxPrice,
+        onlyPromo: onlyPromo,
+        categories: categories,
+        brands: brands,
+        onClose: _closeFilters,
+        onApplyFilters: _applyFilters,
+      )
+          : isLoading
           ? const Center(child: CircularProgressIndicator())
           : CustomScrollView(
         slivers: [
@@ -150,144 +197,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   const SizedBox(height: 8),
                   SearchForm(
                     onChanged: _searchProducts,
-                    onTabFilter: () {
-                      setState(() {
-                        showFilters = !showFilters;
-                      });
-                    },
+                    onTabFilter: _openFiltersScreen,
                   ),
-                  if (showFilters) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).inputDecorationTheme.fillColor ?? Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 18,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                        border: Border.all(
-                          color: Theme.of(context).dividerColor.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      margin: EdgeInsets.zero,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Filtres', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-                            const SizedBox(height: 14),
-                            const Text('Catégories', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-                            ...categories.map((cat) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              child: CheckboxListTile(
-                                value: selectedCategories.contains(cat),
-                                title: Text(cat, style: const TextStyle(fontWeight: FontWeight.w500)),
-                                contentPadding: EdgeInsets.zero,
-                                controlAffinity: ListTileControlAffinity.leading,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                activeColor: Theme.of(context).primaryColor,
-                                onChanged: (checked) {
-                                  setState(() {
-                                    if (checked == true) {
-                                      selectedCategories.add(cat);
-                                    } else {
-                                      selectedCategories.remove(cat);
-                                    }
-                                  });
-                                  _filterProducts();
-                                },
-                              ),
-                            )),
-                            const SizedBox(height: 12),
-                            const Text('Marque', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white, // fond blanc pour le dropdown
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.black12),
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: selectedBrand,
-                                  hint: const Text('Toutes', style: TextStyle(fontWeight: FontWeight.w500)),
-                                  isExpanded: true,
-                                  borderRadius: BorderRadius.circular(8),
-                                  style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
-                                  dropdownColor: Colors.white, // fond blanc pour la liste déroulante
-                                  items: [const DropdownMenuItem(value: '', child: Text('Toutes')),
-                                    ...brands.map((b) => DropdownMenuItem(value: b, child: Text(b)))
-                                  ],
-                                  onChanged: (val) {
-                                    setState(() => selectedBrand = val == '' ? null : val);
-                                    _filterProducts();
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            const Text('Prix', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-                            RangeSlider(
-                              min: minPrice,
-                              max: maxPrice,
-                              divisions: (maxPrice - minPrice).toInt() > 0 ? (maxPrice - minPrice).toInt() : null,
-                              values: RangeValues(currentMinPrice, currentMaxPrice),
-                              labels: RangeLabels(
-                                currentMinPrice.toStringAsFixed(0),
-                                currentMaxPrice.toStringAsFixed(0),
-                              ),
-                              activeColor: Theme.of(context).primaryColor,
-                              onChanged: (values) {
-                                setState(() {
-                                  currentMinPrice = values.start;
-                                  currentMaxPrice = values.end;
-                                });
-                                _filterProducts();
-                              },
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: onlyPromo,
-                                  activeColor: Theme.of(context).primaryColor,
-                                  onChanged: (val) {
-                                    setState(() => onlyPromo = val ?? false);
-                                    _filterProducts();
-                                  },
-                                ),
-                                const Text('En promotion', style: TextStyle(fontWeight: FontWeight.w500)),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      showFilters = false;
-                                    });
-                                  },
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.black,
-                                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  child: const Text('Fermer'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
                   const SizedBox(height: 16),
-                  // ... le reste (plus de Wrap de filtres ici)
                 ],
               ),
             ),

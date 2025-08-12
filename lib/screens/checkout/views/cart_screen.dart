@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shop/constants.dart';
-import 'package:shop/services/auth_service.dart';
+import 'package:shop/services/api/cart_api.dart';
 import '../cart_notifier.dart';
 import 'package:shop/models/product_model.dart';
-import 'package:shop/screens/product/views/product_details_screen.dart';
-import 'package:shop/route/route_constants.dart';
+import 'package:shop/route/screen_export.dart';
 
 
 
@@ -130,7 +129,9 @@ class _CartScreenState extends State<CartScreen> {
                 ? Row(
               children: [
                 Text(
-                  '${prix.toStringAsFixed(2)} €',
+                  prix % 1 == 0
+                      ? '${prix.toInt()} €'
+                      : '${prix.toStringAsFixed(2)} €',
                   style: const TextStyle(
                     color: Colors.grey,
                     decoration: TextDecoration.lineThrough,
@@ -138,7 +139,9 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '${prixPromo.toStringAsFixed(2)} €',
+                  prixPromo % 1 == 0
+                      ? '${prixPromo.toInt()} €'
+                      : '${prixPromo.toStringAsFixed(2)} €',
                   style: const TextStyle(
                     color: Colors.red,
                     fontWeight: FontWeight.bold,
@@ -146,7 +149,10 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ],
             )
-                : Text('Prix : ${prix.toStringAsFixed(2)} €'),
+                : Text('Prix : '
+                    + (prix % 1 == 0
+                        ? '${prix.toInt()} €'
+                        : '${prix.toStringAsFixed(2)} €')),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -187,12 +193,12 @@ class _CartScreenState extends State<CartScreen> {
           ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Total :',
               style: Theme.of(context).textTheme.titleMedium,
             ),
+            const SizedBox(width: 12), // Décale le prix plus à gauche
             Text(
               '${total.toStringAsFixed(2)} €',
               style: Theme.of(context)
@@ -200,10 +206,13 @@ class _CartScreenState extends State<CartScreen> {
                   .titleLarge
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
-            Expanded(
+            const Spacer(), // Pousse le bouton à droite
+            SizedBox(
+              width: 160, // Augmente la taille du bouton Commander
               child: ElevatedButton(
                 onPressed: () {
-                  // Action de validation du panier (ex: envoyer à /api/commande)
+                  if (cartItems.isEmpty) return;
+                  Navigator.of(context).pushNamed(orderDetailsScreenRoute);
                 },
                 child: const Text('Commander'),
               ),

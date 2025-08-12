@@ -7,23 +7,23 @@ import 'package:shop/components/custom_modal_bottom_sheet.dart';
 import 'package:shop/components/product/product_card.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/screens/product/views/product_returns_screen.dart';
-
+import 'package:shop/services/api/product_api.dart';
 import 'components/notify_me_card.dart';
 import 'components/product_info.dart';
 import 'components/product_list_tile.dart';
 import '../../../components/review_card.dart';
 import 'product_buy_now_screen.dart';
 
-import 'package:shop/services/auth_service.dart';
+
 
 class ProductDetailsScreen extends StatefulWidget {
   final bool isProductAvailable;
-  final ProductModel currentProduct;
+  final ProductModel? currentProduct;
 
   const ProductDetailsScreen({
     super.key,
     this.isProductAvailable = true,
-    required this.currentProduct,
+    this.currentProduct,
   });
 
   @override
@@ -32,25 +32,63 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   List<ProductModel> allProducts = [];
+  ProductModel? fullProduct;
   bool isLoading = true;
+  ProductModel? selectedSimilarProduct;
 
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+    fetchProductsAndFullProduct();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProductsAndFullProduct() async {
     final List<Map<String, dynamic>> apiProducts = await fetchStockItems();
+    final products = apiProducts.map((e) => ProductModel.fromJson(e)).toList();
+    ProductModel? found;
+    // Récupère le produit transmis par l'écran précédent
+    final ProductModel? argProduct = widget.currentProduct ?? (ModalRoute.of(context)?.settings.arguments as ProductModel?);
+    if (argProduct != null) {
+      try {
+        found = products.firstWhere((p) => p.id == argProduct.id);
+      } catch (_) {}
+    }
     setState(() {
-      allProducts = apiProducts.map((e) => ProductModel.fromJson(e)).toList();
+      allProducts = products;
+      fullProduct = found ?? argProduct;
       isLoading = false;
     });
   }
 
+  void _showSimilarProductDetails(ProductModel product) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.8, // 80% de la hauteur de l'écran
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: Scaffold(
+              body: ProductDetailsScreen(
+                isProductAvailable: true,
+                currentProduct: product,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final ProductModel currentProduct = widget.currentProduct;
+    final ProductModel? currentProduct = fullProduct ?? (ModalRoute.of(context)?.settings.arguments as ProductModel?);
+    if (currentProduct == null) {
+      return const Scaffold(body: Center(child: Text('Produit introuvable')));
+    }
+    debugPrint('Image fiche produit : \u001b[32m${currentProduct.image}\u001b[0m');
 
     // Filtrer les produits similaires par catégorie (hors produit courant)
     final String? currentCategorie = currentProduct.categorie;
@@ -107,10 +145,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Center(
                       child: AspectRatio(
                         aspectRatio: 1.2,
-                        child: Image.network(
+                        child: (currentProduct.image != null && currentProduct.image.isNotEmpty)
+                            ? Image.network(
                           currentProduct.image,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 80, color: Colors.grey),
+                        )
+                            : Container(
+                          color: Colors.grey.shade100,
+                          child: const Icon(Icons.image_not_supported, size: 80, color: Colors.grey),
                         ),
                       ),
                     ),
@@ -134,7 +177,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   children: [
                     if (currentProduct.isPromo) ...[
                       Text(
-                        '${currentProduct.price.toStringAsFixed(2)} €',
+                        currentProduct.price % 1 == 0
+                            ? '${currentProduct.price.toInt()} €'
+                            : '${currentProduct.price.toStringAsFixed(2)} €',
                         style: TextStyle(
                           color: Colors.grey,
                           decoration: TextDecoration.lineThrough,
@@ -143,7 +188,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${currentProduct.displayPrice.toStringAsFixed(2)} €',
+                        currentProduct.displayPrice % 1 == 0
+                            ? '${currentProduct.displayPrice.toInt()} €'
+                            : '${currentProduct.displayPrice.toStringAsFixed(2)} €',
                         style: TextStyle(
                           color: Colors.red,
                           fontWeight: FontWeight.bold,
@@ -152,7 +199,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                     ] else ...[
                       Text(
-                        '${currentProduct.displayPrice.toStringAsFixed(2)} €',
+                        currentProduct.displayPrice % 1 == 0
+                            ? '${currentProduct.displayPrice.toInt()} €'
+                            : '${currentProduct.displayPrice.toStringAsFixed(2)} €',
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -241,7 +290,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           price: product.prix_promo ?? product.price,
                           categorie: product.categorie,
                           press: () {
-                            // Action sur produit recommandé
+                            _showSimilarProductDetails(product); // Affiche le détail en child
                           },
                         ),
                       );
@@ -260,4 +309,3 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 }
-

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../constants.dart';
+import 'package:shop/constants.dart';
 
 class PreferencesListTile extends StatelessWidget {
   const PreferencesListTile({
@@ -36,7 +36,7 @@ class PreferencesListTile extends StatelessWidget {
       ),
       trailing: CupertinoSwitch(
         onChanged: (value) {
-          press;
+          press();
         },
         activeColor: primaryColor,
         value: isActive,
